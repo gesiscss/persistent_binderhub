@@ -1,0 +1,126 @@
+binderhub:
+  pdb:
+    minAvailable: 0
+  # NOTE: binder pod must have 1 replica, otherwise there are authentication errors
+  # https://github.com/jupyterhub/jupyterhub/issues/2841
+  replicas: 1
+
+  config:
+    BinderHub:
+      auth_enabled: true
+      # NOTE: when base_url is changed, change also binder_base_url and static_binder in extraConfig.02-tempalte-variables
+      base_url: /services/binder/
+      use_registry: true
+      build_image: jupyter/repo2docker:0.11.0-31.g1776b79
+
+  extraEnv:
+    - name: PROJECTS_LIMIT_PER_USER
+      value: "5"
+
+  extraConfig:
+    01-repo-providers:  |
+      # TODO enable zenodo, figshare and others
+      from binderhub.repoproviders import GitHubRepoProvider, GitRepoProvider, GitLabRepoProvider, GistRepoProvider
+      c.BinderHub.repo_providers = {
+          'gh': GitHubRepoProvider,
+          'gist': GistRepoProvider,
+          'gl': GitLabRepoProvider,
+          'git': GitRepoProvider,
+      }
+    02-launcher:  |
+      import json
+      import os
+      from tornado import web
+
+      async def check_user_projects(launcher, image, username, server_name, repo_url):
+          # we are making request to API with admin token
+          resp = await launcher.api_request(
+              'projects/%s' % username,
+              method='GET',
+          )
+          body = json.loads(resp.body.decode('utf-8'))
+          projects = body['projects']
+          projects_limit = int(os.getenv('PROJECTS_LIMIT_PER_USER', 0))
+          if projects_limit > 0 and projects:
+            projects_repo_list = [p[0] for p in projects]
+            if repo_url not in projects_repo_list and len(projects) >= projects_limit:
+                raise web.HTTPError(409, "No more than {} projects is allowed. "
+                                         "One must be deleted before a new project can be created.".
+                                         format(projects_limit))
+      c.Launcher.pre_launch_hook = check_user_projects
+
+  cors: &cors
+    allowOrigin: '*'
+
+  jupyterhub:
+    custom:
+      cors: *cors
+      binderauth_enabled: true
+    cull:
+      # don't cull authenticated users
+      users: False
+    hub:
+      # NOTE: hub and proxy must have 1 pod (https://github.com/jupyterhub/jupyterhub/issues/2841#issuecomment-561848594)
+      # replicas: 1
+      pdb:
+        minAvailable: 0
+      extraVolumes:
+        - name: persistent-bhub-templates
+          configMap:
+            name: persistent-bhub-templates
+        - name: persistent-bhub-config
+          configMap:
+            name: persistent-bhub-config
+      extraVolumeMounts:
+        - name: persistent-bhub-templates
+          mountPath: /etc/jupyterhub/templates
+        - name: persistent-bhub-config
+          # mount to where jupyterhub_config.py is,
+          # we import the spawner class from persistent_bhub_config inside jupyterhub_config.py (hub.extraConfig)
+          mountPath: /etc/jupyterhub/persistent_bhub_config.py
+          subPath: persistent_bhub_config.py
+      templatePaths:
+        - "/etc/jupyterhub/templates"
+      #authenticatePrometheus: false
+      redirectToServer: false
+      services:
+        binder:
+          oauth_no_confirm: true
+      extraConfig:
+        02-tempalte-variables:  |
+          c.JupyterHub.template_vars.update({
+              "binder_base_url": "/services/binder/",
+              "static_binder": "/services/binder/static/",
+          })
+        01-binder: |
+          from persistent_bhub_config import ProjectAPIHandler
+          c.JupyterHub.extra_handlers = [(r'/api/projects/([^/]+)', ProjectAPIHandler)]
+          # use default restartPolicy, which is 'Always'
+          # c.KubeSpawner.extra_pod_config.update({'restart_policy': 'OnFailure'})
+        00-binder: |
+          from persistent_bhub_config import PersistentBinderSpawner
+          c.JupyterHub.spawner_class = PersistentBinderSpawner
+
+    proxy:
+      # NOTE: hub and proxy must have 1 pod (https://github.com/jupyterhub/jupyterhub/issues/2841#issuecomment-561848594)
+      # replicas: 1
+      pdb:
+        minAvailable: 0
+
+    auth:
+      type: dummy
+      custom: {}
+
+    singleuser:
+      # events_enabled - to get events from kubespawner
+      events: true
+      # to make notebook servers aware of hub
+      cmd: jupyterhub-singleuser
+      storage:
+        type: dynamic
+      image:
+        # NOTE: when you update this image,
+        # don't forget to update `default_project` attribute of `PersistentBinderSpawner` in persistent_bhub_config.py
+        # https://github.com/gesiscss/data_science_image
+        name: gesiscss/singleuser-orc
+        tag: "r2d-49e91d9"
