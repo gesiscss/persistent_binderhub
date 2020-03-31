@@ -7,8 +7,7 @@ binderhub:
   config:
     BinderHub:
       debug: true
-      # 192.168.99.100 is minikube ip
-      hub_url: http://192.168.99.100:30123
+      hub_url: http://127.0.0.1:30123
       use_registry: false
 
   service:
@@ -27,9 +26,8 @@ binderhub:
       shutdownOnLogout: true
       services:
         binder:
-          # 192.168.99.100 is minikube ip
-          url: http://192.168.99.100:30124
-          oauth_redirect_uri: "http://192.168.99.100:30123/services/binder/oauth_callback"
+          url: http://127.0.0.1:30124
+          oauth_redirect_uri: "http://127.0.0.1:30123/services/binder/oauth_callback"
           oauth_client_id: "binder-oauth-client-dev"
           apiToken: "6e5252a4ef9f19554cfffd970270e144e4dcca1520b9c6bb6c6f412743cbea7a"
       resources:

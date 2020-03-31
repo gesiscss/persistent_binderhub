@@ -86,11 +86,26 @@ helm template persistent_binderhub -f local/config.yaml
 # install it in minikube cluster
 helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml
 
-# run this command to reach the application
-minikube service --namespace=pbhub-dev-ns proxy-public
-
 # to delete
 helm delete pbhub-dev --purge
 kubectl delete namespace pbhub-dev-ns
 
+```
+4. Get the kubernetes URL for the `proxy-public` service
+
+```bash
+minikube service --namespace=pbhub-dev-ns proxy-public --url=true
+# to get get URL of binder service
+minikube service --namespace=pbhub-dev-ns binder --url=true
+# to list the URLs for all services
+minikube service list --namespace=pbhub-dev-ns
+```
+
+5. in `config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service 
+and run helm install command again
+
+```bash
+helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml
+# run this command to reach the application in browser
+minikube service --namespace=pbhub-dev-ns proxy-public
 ```
