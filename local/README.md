@@ -61,6 +61,8 @@ minikube ip
 ```bash
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 helm init
+# wait until tiller is ready
+helm version
 
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 helm repo update
@@ -108,4 +110,15 @@ and run helm install command again
 helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml
 # run this command to reach the application in browser
 minikube service --namespace=pbhub-dev-ns proxy-public
+```
+
+#### Persistent volumes in minikube
+
+https://minikube.sigs.k8s.io/docs/reference/persistent_volumes/
+
+```bash
+# ssh to minikube instance
+minikube ssh
+# inside minikube, list PVs
+ls -alh /tmp/hostpath-provisioner/
 ```
