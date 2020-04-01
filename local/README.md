@@ -1,33 +1,20 @@
 # Run Persistent BinderHub in minikube
 
-1. [Install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+1. Follow the [documentation](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube
+and then start it: 
 
-```bash
-# to start minikube
-minikube start
+`minikube start`
 
-# to stop minikube
-minikube stop
-# if you get error "error: You must be logged in to the server (Unauthorized)", 
-# # you can delete and re-start minikube cluster
-minikube delete
-rm -rf ~/.kube
-
-# to start dashboard
-minikube dashboard
-# to get ip of minikube cluster
-minikube ip
-```
-
-2. [Install and initialize helm](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)
+2. Install and initialize helm [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:
 ```bash
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 helm init
-# wait until tiller is ready
+# run this command until tiller is ready
 helm version
-
+# add jupyterhub chart repo and update charts
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 helm repo update
+
 ```
 Before starting your local deployment run:
 
@@ -39,39 +26,68 @@ Note: when you no longer wish to use the minikube host, you can undo this change
 
 `eval $(minikube docker-env -u)`
 
-3. 
+3. Deploy persistent BinderHub:
+
 ```bash
 cd persistent_binderhub
 # update binderhub chart
 helm dependency update persistent_binderhub
-
-# test config for local development
+# test local config
 helm template persistent_binderhub -f local/config.yaml
 # install it in minikube cluster
 helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml
 
-# to delete
-helm delete pbhub-dev --purge
-kubectl delete namespace pbhub-dev-ns
-
 ```
-4. Get the kubernetes URL for the `proxy-public` service
+
+4. Get the kubernetes URL for the `proxy-public` service:
+
+`minikube service --namespace=pbhub-dev-ns proxy-public --url=true`
+
+5. in `config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service, 
+which you acquired in the previous step 
+and run helm installation command again:
+
+`helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml`
+
+6. Finally run this command to reach the application in browser:
+
+`minikube service --namespace=pbhub-dev-ns proxy-public`
+
+It takes couple of minutes until all pods get ready, because required docker images must be downloaded into minikube cluster. 
+Meanwhile you can start the k8s dashboard and observe pods in `pbhub-dev-ns` namespace:
+
+`minikube dashboard`
+
+## Tearing everything down
 
 ```bash
-minikube service --namespace=pbhub-dev-ns proxy-public --url=true
+# to delete the deployment
+helm delete pbhub-dev --purge
+# to delete the namespace
+kubectl delete namespace pbhub-dev-ns
+
+# to stop minikube
+minikube stop
+# if you get error "error: You must be logged in to the server (Unauthorized)", 
+# # you can delete and re-start minikube cluster
+minikube delete
+rm -rf ~/.kube
+```
+
+## Useful minikube commands
+
+```bash
+# to get ip of minikube cluster
+minikube ip
+
 # to get get URL of binder service
 minikube service --namespace=pbhub-dev-ns binder --url=true
 # to list the URLs for all services
 minikube service list --namespace=pbhub-dev-ns
-```
 
-5. in `config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service 
-and run helm install command again
-
-```bash
-helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml
-# run this command to reach the application in browser
-minikube service --namespace=pbhub-dev-ns proxy-public
+# to mount a local directory to minikube instance
+# https://minikube.sigs.k8s.io/docs/tasks/mount/
+minikube mount path/to/dir:/mount/path
 ```
 
 ## Persistent volumes in minikube
