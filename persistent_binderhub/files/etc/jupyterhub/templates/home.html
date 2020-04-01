@@ -8,18 +8,19 @@
 <link href="{{ static_binder }}dist/styles.css" rel="stylesheet"/>
 <link rel="stylesheet" href="{{ static_url("components/bootstrap/dist/css/bootstrap.min.css") }}" type="text/css"/>
 {{ super() }}
-{% endblock %}
+<link rel="stylesheet" href="{{ static_url("css/persistent_bhub.css") }}" type="text/css"/>
+{% endblock stylesheet %}
 
 {% block scripts %}
     <script src="{{static_url("components/requirejs/require.js") }}" type="text/javascript" charset="utf-8"></script>
     <script src="{{static_url("components/jquery/dist/jquery.min.js") }}" type="text/javascript" charset="utf-8"></script>
 {#    <script src="{{static_url("components/bootstrap/dist/js/bootstrap.min.js") }}" type="text/javascript" charset="utf-8"></script>#}
-{% endblock %}
+{% endblock scripts %}
 
 {% block main %}
 <div id="main-container" class="container">
   {% block binder_header %}
-    <div id="header" class="text-center" style="border-bottom: none;">
+    <div id="header" class="text-center">
         {#      <h3>Turn a Git repo into a collection of interactive notebooks</h3>#}
         <div id="explanation">
             Have a Binder-Ready repository? With Persistent BinderHub, turn this repository into a persistent Jupyter
@@ -179,7 +180,7 @@
 
 
         <!--url section-->
-        <div class="url row" style="display: none;">
+        <div class="url row">
             <div class="dropdownmenu">
               <label>Copy the URL below and share your Binder with others:</label>
             </div>
@@ -189,7 +190,7 @@
             </div>
         </div>
 
-        <div class="badges row" style="display: none;">
+        <div class="badges row">
             <div class="dropdownmenu" id="toggle-badge-snippet">
               <label>Copy the text below, then paste into your README to show a binder badge: <img id="badge" src="{{ static_binder }}images/badge_logo.svg?v={{ static_version }}"></label>
               <a id="badge-link"></a>

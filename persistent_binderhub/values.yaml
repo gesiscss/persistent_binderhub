@@ -8,7 +8,7 @@ binderhub:
   config:
     BinderHub:
       auth_enabled: true
-      # NOTE: when base_url is changed, change also binder_base_url and static_binder in extraConfig.02-tempalte-variables
+      # NOTE: when base_url is changed, change also binder_base_url and static_binder in jupyterhub.hub.templateVars
       base_url: /services/binder/
       use_registry: true
       build_image: jupyter/repo2docker:0.11.0-31.g1776b79
@@ -68,12 +68,19 @@ binderhub:
         - name: persistent-bhub-templates
           configMap:
             name: persistent-bhub-templates
+        - name: persistent-bhub-styles
+          configMap:
+            name: persistent-bhub-styles
         - name: persistent-bhub-config
           configMap:
             name: persistent-bhub-config
       extraVolumeMounts:
         - name: persistent-bhub-templates
           mountPath: /etc/jupyterhub/templates
+        - name: persistent-bhub-styles
+          # mount to where jupyterhub css files are
+          mountPath: /usr/local/share/jupyterhub/static/css/persistent_bhub.css
+          subPath: persistent_bhub.css
         - name: persistent-bhub-config
           # mount to where jupyterhub_config.py is,
           # we import the spawner class from persistent_bhub_config inside jupyterhub_config.py (hub.extraConfig)
@@ -81,17 +88,15 @@ binderhub:
           subPath: persistent_bhub_config.py
       templatePaths:
         - "/etc/jupyterhub/templates"
+      templateVars:
+        binder_base_url: /services/binder/
+        static_binder: /services/binder/static/
       #authenticatePrometheus: false
       redirectToServer: false
       services:
         binder:
           oauth_no_confirm: true
       extraConfig:
-        02-tempalte-variables:  |
-          c.JupyterHub.template_vars.update({
-              "binder_base_url": "/services/binder/",
-              "static_binder": "/services/binder/static/",
-          })
         01-binder: |
           from persistent_bhub_config import ProjectAPIHandler
           c.JupyterHub.extra_handlers = [(r'/api/projects/([^/]+)', ProjectAPIHandler)]
