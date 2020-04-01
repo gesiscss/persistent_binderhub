@@ -4,8 +4,8 @@
 <meta id="base-url" data-url="{{ binder_base_url }}">
 <meta id="badge-base-url" data-url="{{badge_base_url}}">
 {# static files from binder #}
-<script src="{{ static_binder }}dist/bundle.js"></script>
-<link href="{{ static_binder }}dist/styles.css" rel="stylesheet"/>
+<script src="{{ static_binder }}dist/bundle.js?v={{ static_version }}"></script>
+<link href="{{ static_binder }}dist/styles.css?v={{ static_version }}" rel="stylesheet"/>
 <link rel="stylesheet" href="{{ static_url("components/bootstrap/dist/css/bootstrap.min.css") }}" type="text/css"/>
 {{ super() }}
 <link rel="stylesheet" href="{{ static_url("css/persistent_bhub.css") }}" type="text/css"/>
