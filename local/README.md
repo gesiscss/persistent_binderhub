@@ -1,42 +1,4 @@
-## Run Persistent BinderHub locally
-
-### Run only JupyterHub to test templates and static files
-
-1. Create a virtual env and activate it
-
-2. Install JupyterHub v1.1.0: https://jupyterhub.readthedocs.io/en/stable/quickstart.html
-
-3. `cd persistent_binderhub/local`
-
-4. run JupyterHub with custom configuration: `jupyterhub -f jupyterhub_config.py`
-
-5. Open http://localhost:8000
-
-#### Run JupyterHub in Docker
-
-```bash
-cd persistent_binderhub
-# v1.1.0 has problem with the templates, so run v 1.2.0dev
-docker run --rm -p 8000:8000 -v "$PWD":/srv/pbhub --name jupyterhub jupyterhub/jupyterhub:1.2.0dev jupyterhub -f /srv/pbhub/local/jupyterhub_config.py
-#      --rm                             Automatically remove the container when it exits
-
-# if you want to run container in background:
-docker run -d -p 8000:8000 -v "$PWD":/srv/pbhub --name jupyterhub jupyterhub/jupyterhub:1.2.0dev jupyterhub -f /srv/pbhub/local/jupyterhub_config.py
-#   -d, --detach                         Run container in background and print container ID
-docker container ls
-# to execute an interactive bash shell on the container
-docker exec -it jupyterhub bash
-# to stop and delete the container
-docker stop jupyterhub
-docker rm jupyterhub
-
-```
-
-### Run Persistent BinderHub in minikube
-
-First way (`Run only JupyterHub to test templates and static files`) should normally be enough for local 
-development. If you still need it, you can run it with minikube as it is explained here. But be aware that 
-`config.yaml` might be incomplete.
+# Run Persistent BinderHub in minikube
 
 1. [Install minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
@@ -112,7 +74,7 @@ helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub -
 minikube service --namespace=pbhub-dev-ns proxy-public
 ```
 
-#### Persistent volumes in minikube
+## Persistent volumes in minikube
 
 https://minikube.sigs.k8s.io/docs/reference/persistent_volumes/
 
