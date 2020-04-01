@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 data:
-  {{- (.Files.Glob "files/etc/jupyterhub/templates/*").AsConfig | nindent 2 }}
+  {{- (.Files.Glob "files/jupyterhub/templates/*").AsConfig | nindent 2 }}
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -23,7 +23,7 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 data:
   persistent_bhub.css: |-
-    {{- .Files.Get "files/etc/jupyterhub/persistent_bhub.css" | nindent 4 }}
+    {{- .Files.Get "files/jupyterhub/persistent_bhub.css" | nindent 4 }}
 
 ---
 kind: ConfigMap
@@ -38,4 +38,4 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 data:
   persistent_bhub_config.py: |-
-    {{- .Files.Get "files/etc/jupyterhub/persistent_bhub_config.py" | nindent 4 }}
+    {{- .Files.Get "files/jupyterhub/persistent_bhub_config.py" | nindent 4 }}

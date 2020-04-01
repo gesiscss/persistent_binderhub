@@ -1031,7 +1031,7 @@ template_vars.update({
 c.JupyterHub.template_vars.update(template_vars)
 
 ## Paths to search for jinja templates, before using the default templates.
-c.JupyterHub.template_paths = [os.path.join(repo_dir, "persistent_binderhub/files/etc/jupyterhub/templates")]
+c.JupyterHub.template_paths = [os.path.join(repo_dir, "persistent_binderhub/files/jupyterhub/templates")]
 
 from jupyterhub.auth import DummyAuthenticator
 c.JupyterHub.authenticator_class = DummyAuthenticator
