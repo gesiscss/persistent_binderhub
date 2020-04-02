@@ -33,9 +33,9 @@ cd persistent_binderhub
 # update binderhub chart
 helm dependency update persistent_binderhub
 # test local config
-helm template persistent_binderhub -f local/config.yaml
+helm template persistent_binderhub -f local/minikube/config.yaml
 # install it in minikube cluster
-helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml
+helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/minikube/config.yaml
 
 ```
 
@@ -47,7 +47,7 @@ helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub -
 which you acquired in the previous step 
 and run helm installation command again:
 
-`helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/config.yaml`
+`helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/minikube/config.yaml`
 
 6. Finally run this command to reach the application in browser:
 
