@@ -1,7 +1,6 @@
 """
-Custom KubeSpawner and JupyterHub handlers for persistent BinderHub deployment.
-
-These handlers are imported in extraConfig in values.yaml
+Custom KubeSpawner and an API handler for for projects to be used persistent BinderHub deployment.
+These are imported in binderhub.jupyterhub.hub.extraConfig in values.yaml
 """
 import json
 import string

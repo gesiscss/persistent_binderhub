@@ -35,7 +35,11 @@ helm dependency update persistent_binderhub
 # test local config
 helm template persistent_binderhub -f local/minikube/config.yaml
 # install it in minikube cluster
-helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/minikube/config.yaml
+helm upgrade pbhub-dev persistent_binderhub \
+             --install \
+             --namespace=pbhub-dev-ns \
+             -f local/minikube/config.yaml \
+             --debug
 
 ```
 
@@ -47,7 +51,14 @@ helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub -
 which you acquired in the previous step 
 and run helm installation command again:
 
-`helm upgrade --install --namespace=pbhub-dev-ns pbhub-dev persistent_binderhub --debug -f local/minikube/config.yaml`
+```bash
+helm upgrade pbhub-dev persistent_binderhub \
+             --install \
+             --namespace=pbhub-dev-ns \
+             -f local/minikube/config.yaml \
+             --debug
+
+```
 
 6. Finally run this command to reach the application in browser:
 
@@ -61,7 +72,7 @@ Meanwhile you can start the k8s dashboard and observe pods in `pbhub-dev-ns` nam
 ## Tearing everything down
 
 ```bash
-# to delete the deployment
+# to delete the release
 helm delete pbhub-dev --purge
 # to delete the namespace
 kubectl delete namespace pbhub-dev-ns
