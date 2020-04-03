@@ -53,16 +53,12 @@ binderhub:
       admin:
         users:
           - admin
-      state:
-        cryptoKey: "696dc77c0a950f42710b7e5694b721dfe9298c047e204854fea5cff6cbb9eb98"
 
     singleuser:
       cpu:
         guarantee: 0
       memory:
         guarantee: 0
-      storage:
-        capacity: 5Gi
 
     scheduling:
       userScheduler:
