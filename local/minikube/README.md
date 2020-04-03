@@ -48,7 +48,7 @@ helm upgrade pbhub-dev persistent_binderhub \
 
 `minikube service --namespace=pbhub-dev-ns proxy-public --url=true`
 
-5. in `config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service, 
+5. in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service, 
 which you acquired in the previous step 
 and run helm installation command again:
 
