@@ -46,7 +46,7 @@ helm upgrade pbhub-dev persistent_binderhub \
 
 4. Get the kubernetes URL for the `proxy-public` service:
 
-`minikube service --namespace=pbhub-dev-ns proxy-public --url=true`
+`minikube service proxy-public --namespace=pbhub-dev-ns --url=true`
 
 5. in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service, 
 which you acquired in the previous step 
@@ -63,12 +63,14 @@ helm upgrade pbhub-dev persistent_binderhub \
 
 6. Finally run this command to reach the application in browser:
 
-`minikube service --namespace=pbhub-dev-ns proxy-public`
+`minikube service proxy-public --namespace=pbhub-dev-ns`
 
 It takes couple of minutes until all pods get ready, because required docker images must be downloaded into minikube cluster. 
-Meanwhile you can start the k8s dashboard and observe pods in `pbhub-dev-ns` namespace:
+Meanwhile you can run the following command to observe the pods until they have status 'Running':
 
-`minikube dashboard`
+`kubectl get pod --namespace=pbhub-dev-ns --watch`
+
+You can exit watching by `CTRL+C`.
 
 ## Tearing everything down
 
@@ -89,11 +91,13 @@ rm -rf ~/.kube
 ## Useful minikube commands
 
 ```bash
+# to access to the kubernetes dashboard in minikube cluster
+minikube dashboard
 # to get ip of minikube cluster
 minikube ip
 
 # to get get URL of binder service
-minikube service --namespace=pbhub-dev-ns binder --url=true
+minikube service binder --url=true --namespace=pbhub-dev-ns
 # to list the URLs for all services
 minikube service list --namespace=pbhub-dev-ns
 
