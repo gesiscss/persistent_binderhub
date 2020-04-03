@@ -29,6 +29,7 @@ Note: when you no longer wish to use the minikube host, you can undo this change
 3. Deploy persistent BinderHub:
 
 ```bash
+git clone https://github.com/gesiscss/persistent_binderhub.git
 cd persistent_binderhub
 # update binderhub chart
 helm dependency update persistent_binderhub
