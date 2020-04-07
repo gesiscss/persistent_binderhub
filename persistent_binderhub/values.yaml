@@ -10,7 +10,7 @@ binderhub:
     BinderHub:
       auth_enabled: true
       # NOTE: when base_url is changed,
-      # change also binder_base_url and static_binder in jupyterhub.hub.extraConfig.02-tempalte-variables
+      # change also binder_base_url and static_binder in jupyterhub.hub.extraConfig.30-template-variables
       base_url: /services/binder/
       use_registry: true
       build_image: jupyter/repo2docker:0.11.0-31.g1776b79
@@ -59,6 +59,11 @@ binderhub:
     custom:
       cors: *cors
       binderauth_enabled: true
+      # https://github.com/gesiscss/data_science_image
+      default_project:
+        - "https://github.com/gesiscss/data_science_image"
+        - "gesiscss/singleuser-orc:r2d-49e91d9"
+        - "master"
     cull:
       # don't cull authenticated users
       users: False
@@ -98,19 +103,24 @@ binderhub:
         binder:
           oauth_no_confirm: true
       extraConfig:
-        02-tempalte-variables:  |
+        30-template-variables:  |
           import random
           c.JupyterHub.template_vars.update({
               "binder_base_url": "/services/binder/",
               "static_binder": "/services/binder/static/",
               "static_version": hex(random.getrandbits(128))[2:],
           })
-        01-binder: |
+        20-project-api: |
           from persistent_bhub_config import ProjectAPIHandler
           c.JupyterHub.extra_handlers = [(r'/api/projects/([^/]+)', ProjectAPIHandler)]
           # restart_policy is already set 'OnFailure' by kubespawner:
           # https://github.com/jupyterhub/kubespawner/blob/8751773916ccc6b84c998f7950dd3e07fea5ae4e/kubespawner/objects.py#L231
           # c.KubeSpawner.extra_pod_config.update({'restart_policy': 'OnFailure'})
+        10-default-image: |
+          import z2jh
+          # use custom.default_project to set the default image, instead of singleuser.image config
+          default_project = z2jh.get_config('custom.default_project')
+          c.KubeSpawner.image = default_project[1]
         00-binder: |
           from persistent_bhub_config import PersistentBinderSpawner
           c.JupyterHub.spawner_class = PersistentBinderSpawner
@@ -136,8 +146,5 @@ binderhub:
         # z2jh has 10Gi as default
         capacity: 5Gi
       image:
-        # NOTE: when you update this image,
-        # don't forget to update `default_project` attribute of `PersistentBinderSpawner` in persistent_bhub_config.py
-        # https://github.com/gesiscss/data_science_image
-        name: gesiscss/singleuser-orc
-        tag: "r2d-49e91d9"
+        name: null
+        tag: null

@@ -5,6 +5,7 @@ These are imported in binderhub.jupyterhub.hub.extraConfig in values.yaml
 import json
 import string
 import random
+import z2jh
 from os.path import join
 from urllib.parse import urlparse
 from tornado import web
@@ -16,7 +17,9 @@ from kubespawner import KubeSpawner
 
 
 class PersistentBinderSpawner(KubeSpawner):
-    default_project = ['https://github.com/gesiscss/data_science_image', 'gesiscss/singleuser-orc:r2d-49e91d9', 'master']
+    def __init__(self, **kwargs):
+        super(PersistentBinderSpawner, self).__init__(**kwargs)
+        self.default_project = z2jh.get_config('custom.default_project')
 
     def url_to_display_name(self, url):
         if url.endswith('.git'):
