@@ -22,8 +22,8 @@ binderhub:
   extraConfig:
     01-repo-providers:  |
       # TODO enable zenodo, figshare and others
-      from binderhub.repoproviders import GitHubRepoProvider, GitRepoProvider, \
-                                          GitLabRepoProvider, GistRepoProvider
+      from binderhub.repoproviders import GitHubRepoProvider, GistRepoProvider, \
+                                          GitLabRepoProvider, GitRepoProvider
       c.BinderHub.repo_providers = {
           'gh': GitHubRepoProvider,
           'gist': GistRepoProvider,
@@ -36,6 +36,9 @@ binderhub:
       from tornado import web
 
       async def check_user_projects(launcher, image, username, server_name, repo_url):
+          """Checks if current user exceeds the limit of projects stored per user or not.
+          If yes, show an error message to user.
+          """
           projects_limit = int(os.getenv('PROJECTS_LIMIT_PER_USER', 0))
           if projects_limit > 0:
             # we are making request to API with admin token

@@ -11,9 +11,6 @@ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 helm init
 # run this command until tiller is ready
 helm version
-# add jupyterhub chart repo and update charts
-helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-helm repo update
 
 ```
 Before starting your local deployment run:
@@ -31,7 +28,7 @@ Note: when you no longer wish to use the minikube host, you can undo this change
 ```bash
 git clone https://github.com/gesiscss/persistent_binderhub.git
 cd persistent_binderhub
-# update binderhub chart
+# fetch the required charts (BinderHub and JupyterHub charts) into charts folder
 helm dependency update persistent_binderhub
 # test local config
 helm template persistent_binderhub -f local/minikube/config.yaml
@@ -65,8 +62,8 @@ helm upgrade pbhub-dev persistent_binderhub \
 
 `minikube service proxy-public --namespace=pbhub-dev-ns`
 
-It takes couple of minutes until all pods get ready, because required docker images must be downloaded into minikube cluster. 
-Meanwhile you can run the following command to observe the pods until they have status 'Running':
+It takes couple of minutes until all pods get ready, because required docker images must be downloaded into the minikube cluster. 
+Meanwhile you can run the following command to observe the pods until they have status `Running`:
 
 `kubectl get pod --namespace=pbhub-dev-ns --watch`
 
@@ -75,9 +72,9 @@ You can exit watching by `CTRL+C`.
 ## Tearing everything down
 
 ```bash
-# to delete the release
+# to delete the Helm release
 helm delete pbhub-dev --purge
-# to delete the namespace
+# to delete the Kubernetes namespace
 kubectl delete namespace pbhub-dev-ns
 
 # to stop minikube

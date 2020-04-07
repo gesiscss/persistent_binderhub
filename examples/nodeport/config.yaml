@@ -1,0 +1,51 @@
+binderhub:
+
+  config:
+    BinderHub:
+      debug: true
+      hub_url: http://<NodeIP>:30123
+      # use only local docker images
+      use_registry: false
+  service:
+    type: NodePort
+    nodePort: 30124
+
+  dind:
+    enabled: false
+
+  imageCleaner:
+    enabled: false
+
+  jupyterhub:
+    debug:
+      enabled: true
+    hub:
+      cookieSecret: "77a708e6aa1f1fadb67fb9e6479f390911b9e880f178d36a35d9301114f1767e"
+      services:
+        binder:
+          url: http://<NodeIP>:30124
+          oauth_redirect_uri: "http://<NodeIP>:30123/services/binder/oauth_callback"
+          oauth_client_id: "binder-oauth-client-test"
+          apiToken: "b9c376305bb9ce2140f7f7953561e5c8687d40aa9e7a9c3580d52e1f91c4a27f"
+
+    proxy:
+      secretToken: "f61d5cb5bf61e6ca39894bfeb7c85bd75a79e3f8fbcf7a3054bd735a73c76737"
+      https:
+        enabled: false
+      service:
+        type: NodePort
+        nodePorts:
+          http: 30123
+
+    auth:
+      admin:
+        users:
+          - admin
+
+    scheduling:
+      userScheduler:
+        enabled: false
+      podPriority:
+        enabled: false
+      userPlaceholder:
+        enabled: false
