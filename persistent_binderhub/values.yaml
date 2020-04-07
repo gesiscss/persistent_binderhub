@@ -103,6 +103,7 @@ binderhub:
       services:
         binder:
           oauth_no_confirm: true
+          oauth_client_id: "binder-oauth-client-test"
       extraConfig:
         30-template-variables:  |
           import random
