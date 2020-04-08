@@ -13,7 +13,7 @@ binderhub:
       # change also binder_base_url and static_binder in jupyterhub.hub.extraConfig.30-template-variables
       base_url: /services/binder/
       use_registry: true
-      build_image: jupyter/repo2docker:0.11.0-31.g1776b79
+      build_image: jupyter/repo2docker:0.11.0-34.gd366af9
 
   extraEnv:
     - name: PROJECTS_LIMIT_PER_USER
@@ -63,11 +63,9 @@ binderhub:
     custom:
       cors: *cors
       binderauth_enabled: true
-      # https://github.com/gesiscss/data_science_image
       default_project:
-        - "https://github.com/gesiscss/data_science_image"
-        - "gesiscss/singleuser-orc:r2d-49e91d9"
-        - "master"
+        repo_url: "https://github.com/gesiscss/persistent_binderhub"
+        ref: "master"
     cull:
       # don't cull authenticated users
       users: False
@@ -121,11 +119,6 @@ binderhub:
           # restart_policy is already set 'OnFailure' by kubespawner:
           # https://github.com/jupyterhub/kubespawner/blob/8751773916ccc6b84c998f7950dd3e07fea5ae4e/kubespawner/objects.py#L231
           # c.KubeSpawner.extra_pod_config.update({'restart_policy': 'OnFailure'})
-        10-default-image: |
-          import z2jh
-          # use custom.default_project to set the default image, instead of singleuser.image config
-          default_project = z2jh.get_config('custom.default_project')
-          c.KubeSpawner.image = default_project[1]
         00-binder: |
           from persistent_bhub_config import PersistentBinderSpawner
           c.JupyterHub.spawner_class = PersistentBinderSpawner
@@ -148,8 +141,16 @@ binderhub:
       cmd: jupyterhub-singleuser
       storage:
         type: dynamic
-        # z2jh has 10Gi as default
-        capacity: 5Gi
+        capacity: 10Gi
+      # this is not used, default_project is used instead
       image:
         name: null
         tag: null
+
+    # https://zero-to-jupyterhub.readthedocs.io/en/latest/administrator/optimization.html#pulling-images-before-users-arrive
+    # we dont need this, because default project must be always built at first
+    prePuller:
+      hook:
+        enabled: false
+      continuous:
+        enabled: false

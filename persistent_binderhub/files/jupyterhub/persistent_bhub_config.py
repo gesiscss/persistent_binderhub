@@ -19,7 +19,10 @@ from kubespawner import KubeSpawner
 class PersistentBinderSpawner(KubeSpawner):
     def __init__(self, **kwargs):
         super(PersistentBinderSpawner, self).__init__(**kwargs)
-        self.default_project = z2jh.get_config('custom.default_project')
+        default_project = z2jh.get_config('custom.default_project')
+        display_name = self.url_to_display_name(default_project["repo_url"])
+        # default_project is only to use when first login
+        self.default_project = [default_project["repo_url"], '', default_project["ref"], display_name, 'never']
 
     def url_to_display_name(self, url):
         if url.endswith('.git'):
@@ -58,6 +61,8 @@ class PersistentBinderSpawner(KubeSpawner):
            'repo_url' in self.user_options and \
            'token' in self.user_options:
             # binder service sets the image spec via user options
+            # user_options is saved in database, so even user deletes all projects,
+            # user_options for last launched repo stays in database
             # NOTE: user can pass any options through API (without using binder) too
             self.image = self.user_options['image']
             self.ref = self.image.split(':')[-1]
@@ -67,17 +72,24 @@ class PersistentBinderSpawner(KubeSpawner):
             if self.repo_url.endswith('.git'):
                 self.repo_url = self.repo_url[:-4]
         else:
-            # get saved projects
+            # if user never launched a repo before (user_options in database is empty)
+            # and user is trying to start the server via spawn url
+            # normally this shouldn't happen,
+            # we can't display a message to user, and raising errors cause hub to restart
+            # so launch a repo until we handle this better
+            # but first be sure that user has no valid projects
             projects = self.get_state_field('projects')
-            if projects:
-                # user starts server without binder form (default)
-                # for example via spawn url or by refreshing user page when server was stopped
-                # launch last repo in projects
+            if projects and projects[-1][1]:
                 self.repo_url, self.image, self.ref, display_name, _ = projects[-1]
             else:
-                # if user has no projects (e.g. user makes first login, deletes default project
-                # and uses spawn url), start default repo
-                self.repo_url, self.image, self.ref = self.default_project
+                msg = "User ({}) is trying to start the server via spawn url.".format(self.user.name)
+                # self.handler.redirect("/hub/home")
+                # raise Exception(msg)
+                self.log.info(msg)
+                self.repo_url = "https://github.com/gesiscss/persistent_binderhub"
+                # TODO
+                self.image = "gesiscss/:"
+                self.ref = self.image.split(':')[-1]
 
         # prepare the initContainer
         # NOTE: first initContainer runs and when it is done, then notebook container runs
@@ -113,6 +125,7 @@ class PersistentBinderSpawner(KubeSpawner):
         # mount all projects (complete user disk) to /projects
         # first remove existing volume mounts to /projects, it should be unique,
         # normally we shouldn't need this, but sometimes there is duplication when there is a spawn error
+        # for example timeout error due to long docker pull (of server image)
         for i, v_m in enumerate(self.volume_mounts):
             if v_m['mountPath'] == projects_volume_mount['mountPath']:
                 del self.volume_mounts[i]
@@ -143,11 +156,9 @@ class PersistentBinderSpawner(KubeSpawner):
         start and stop of the server (see jupyterhub.User's `start` and `stop` methods),
         db.commit is called after these methods.
         """
-        display_name = self.url_to_display_name(self.default_project[0])
-        # default_projects is only to use when first login
-        default_projects = [self.default_project + [display_name, 'never']]
         _state = self.orm_spawner.state
-        projects = _state.get('projects', []) if _state else default_projects
+        # if user never launched project (state is empty), use default_project
+        projects = _state.get('projects', []) if _state else [self.default_project]
         deleted_projects = _state.get('deleted_projects', []) if _state else []
 
         state = super().get_state()

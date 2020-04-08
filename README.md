@@ -17,6 +17,8 @@ and you are familiar with [enabling authentication](https://binderhub.readthedoc
    * [Projects limit per user](#projects-limit-per-user)
    * [Repo providers](#repo-providers)
    * [Spawner](#spawner)
+* [Local development](#local-development)
+* [Limitations](#limitations)
 
 ## Prerequisites
 
@@ -71,7 +73,7 @@ For more information you can check the
 ```bash
 binderhub:
   jupyterhub:
-    # add config of your authenticator here
+    # add the config of your authenticator here
     auth: {}
 ```
 
@@ -136,17 +138,20 @@ For example, if you want to use another version of repo2docker to build repos, a
 binderhub:
   config:
     BinderHub:
-      build_image: jupyter/repo2docker:0.11.0-31.g1776b79
+      build_image: jupyter/repo2docker:0.11.0-34.gd366af9
 ```
 
-Note: `jupyter/repo2docker:0.11.0-31.g1776b79` is the repo2docker version used in this chart.
+Note: `jupyter/repo2docker:0.11.0-34.gd366af9` is the repo2docker version used in this chart.
 
 ### Default project
 
 A project is simply a binder-ready repository that you launch in a persistent BinderHub. 
+
+Default project is this repo itself by default 
+(check `.binder` folder, there is `intro_to_persistent_binderhub` notebook). 
+
 Assuming that you have a binder-ready repo with the following information
 - repo url: `https://github.com/user_name/repo_name`
-- image name and tag: `user_name/image_name:tag`
 - branch or tag or commit: `ref`
 
 you can set it as default project by adding the following into your `config.yaml`:
@@ -156,10 +161,11 @@ binderhub:
   jupyterhub:
     custom:
       default_project:
-        - "https://github.com/user_name/repo_name"
-        - "user_name/image_name:tag"
-        - "ref"
+        repo_url: "https://github.com/user_name/repo_name"
+        ref: "ref"
 ```
+
+Warning: Default project must be a binder-ready repo, e.g. https://github.com/binder-examples/requirements
 
 ### Projects limit per user
 
@@ -174,7 +180,8 @@ binderhub:
       value: "10"  # change this value as you wish
 ```
 
-If you want to have no projects limit, set `PROJECTS_LIMIT_PER_USER` to "0".
+<!-- we shouldn't encourage people not to have no limit. -->
+<!-- If you want to have no projects limit, set `PROJECTS_LIMIT_PER_USER` to "0". -->
 
 ### Repo providers
 
@@ -218,3 +225,18 @@ binderhub:
             ...
           c.JupyterHub.spawner_class = MyPersistentBinderSpawner
 ```
+
+## Local development
+
+In [local/minikube](local/minikube) folder you can find instructions and configuration file to install this chart in minikube.
+
+## Limitations
+
+1. Binder pod (`binderhub.replicas`) must be 1, otherwise there are authentication errors 
+  (https://github.com/jupyterhub/jupyterhub/issues/2841).
+
+-------
+
+Funded by the German Research Foundation (DFG). 
+FKZ/project number: 
+[324867496](https://gepris.dfg.de/gepris/projekt/324867496?context=projekt&task=showDetail&id=324867496&).

@@ -80,9 +80,8 @@ kubectl delete namespace pbhub-dev-ns
 # to stop minikube
 minikube stop
 # if you get error "error: You must be logged in to the server (Unauthorized)", 
-# # you can delete and re-start minikube cluster
+# you can delete and re-start minikube cluster
 minikube delete
-rm -rf ~/.kube
 ```
 
 ## Useful minikube commands
