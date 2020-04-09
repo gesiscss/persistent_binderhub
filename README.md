@@ -116,13 +116,12 @@ unless you want to overwrite defaults of this chart and you know what you are do
 Here is the list of `extraConfig`s used:
 
 - `binderhub.extraConfig`:
-  - `01-repo-providers`
-  - `02-launcher` 
+  - `20-launcher` 
+  - `10-repo-providers`
 
 - `binderhub.jupyterhub.hub.extraConfig`:
-  - `30-template-variables`
-  - `20-project-api`
-  - `10-default-image`
+  - `20-template-variables`
+  - `10-project-api`
   - `00-binder`
 
 For more information check [values.yaml](persistent_binderhub/values.yaml).
@@ -200,7 +199,7 @@ add the following into your config.yaml:
 ```yaml
 binderhub:
   extraConfig:
-    01-repo-providers:  |
+    10-repo-providers:  |
       from binderhub.repoproviders import GitHubRepoProvider, GistRepoProvider
       c.BinderHub.repo_providers = {
           'gh': GitHubRepoProvider,

@@ -10,7 +10,7 @@ binderhub:
     BinderHub:
       auth_enabled: true
       # NOTE: when base_url is changed,
-      # change also binder_base_url and static_binder in jupyterhub.hub.extraConfig.30-template-variables
+      # change also binder_base_url and static_binder in jupyterhub.hub.extraConfig.20-template-variables
       base_url: /services/binder/
       use_registry: true
       build_image: jupyter/repo2docker:0.11.0-34.gd366af9
@@ -20,17 +20,7 @@ binderhub:
       value: "5"
 
   extraConfig:
-    01-repo-providers:  |
-      # TODO enable zenodo, figshare and others
-      from binderhub.repoproviders import GitHubRepoProvider, GistRepoProvider, \
-                                          GitLabRepoProvider, GitRepoProvider
-      c.BinderHub.repo_providers = {
-          'gh': GitHubRepoProvider,
-          'gist': GistRepoProvider,
-          'gl': GitLabRepoProvider,
-          'git': GitRepoProvider,
-      }
-    02-launcher:  |
+    20-launcher:  |
       import json
       import os
       from tornado import web
@@ -55,6 +45,16 @@ binderhub:
                                            "One must be deleted before a new project can be created.".
                                            format(projects_limit))
       c.Launcher.pre_launch_hook = check_user_projects
+    10-repo-providers:  |
+      # TODO enable zenodo, figshare and others
+      from binderhub.repoproviders import GitHubRepoProvider, GistRepoProvider, \
+                                          GitLabRepoProvider, GitRepoProvider
+      c.BinderHub.repo_providers = {
+          'gh': GitHubRepoProvider,
+          'gist': GistRepoProvider,
+          'gl': GitLabRepoProvider,
+          'git': GitRepoProvider,
+      }
 
   cors: &cors
     allowOrigin: '*'
@@ -106,14 +106,14 @@ binderhub:
           oauth_no_confirm: true
           oauth_client_id: "binder-oauth-client-test"
       extraConfig:
-        30-template-variables:  |
+        20-template-variables:  |
           import random
           c.JupyterHub.template_vars.update({
               "binder_base_url": "/services/binder/",
               "static_binder": "/services/binder/static/",
               "static_version": hex(random.getrandbits(128))[2:],
           })
-        20-project-api: |
+        10-project-api: |
           from persistent_bhub_config import ProjectAPIHandler
           c.JupyterHub.extra_handlers = [(r'/api/projects/([^/]+)', ProjectAPIHandler)]
           # restart_policy is already set 'OnFailure' by kubespawner:
