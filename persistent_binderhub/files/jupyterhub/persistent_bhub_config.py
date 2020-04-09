@@ -87,8 +87,7 @@ class PersistentBinderSpawner(KubeSpawner):
                 # raise Exception(msg)
                 self.log.info(msg)
                 self.repo_url = "https://github.com/gesiscss/persistent_binderhub"
-                # TODO
-                self.image = "gesiscss/:"
+                self.image = "gesiscss/binder-gesiscss-2dpersistent-5fbinderhub-ab107f:737a0febb40ea1cb47776e4d36bd9decbf244b3f"
                 self.ref = self.image.split(':')[-1]
 
         # prepare the initContainer
