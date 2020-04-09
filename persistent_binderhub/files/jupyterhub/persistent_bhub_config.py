@@ -1,6 +1,6 @@
 """
-Custom KubeSpawner and an API handler for for projects to be used persistent BinderHub deployment.
-These are imported in binderhub.jupyterhub.hub.extraConfig in values.yaml
+Custom KubeSpawner and an API handler for projects to be used in persistent BinderHub deployment.
+These are imported in binderhub.jupyterhub.hub.extraConfig in values.yaml.
 """
 import json
 import string
@@ -17,14 +17,28 @@ from kubespawner import KubeSpawner
 
 
 class PersistentBinderSpawner(KubeSpawner):
+    """Assuming that each user has a storage (Persistent Volume)
+    - copies launched project's data in a separate folder by using `initContainers`.
+      So in the project folder we have the same content as provided by repo2docker.
+      This is particularly important because projects may use further features of repo2docker such as the postBuild script.
+    - deletes folder of projects, which are in state["deleted_projects"] of `spawners` table
+    - mounts user’s PV somewhere other than the home folder (to /projects), so that users can access files across multiple projects
+    - mounts folder of launched project (from user’s PV) into the home folder (/home/jovyan)
+    - starts a notebook server on /home/jovyan which is the default behavior of BinderHub. Takes project information
+      (e.g. image and repo url) from `user_options`, which is set by binder.
+    - adds/updates data of launched project into state["projects"] of `spawners` table
+    """
     def __init__(self, **kwargs):
         super(PersistentBinderSpawner, self).__init__(**kwargs)
+        # get default_project from custom config of z2jh chart (`binderhub.jupyterhub.custom`)
+        # https://zero-to-jupyterhub.readthedocs.io/en/latest/administrator/advanced.html#custom-configuration
         default_project = z2jh.get_config('custom.default_project')
         display_name = self.url_to_display_name(default_project["repo_url"])
         # default_project is only to use when first login
         self.default_project = [default_project["repo_url"], '', default_project["ref"], display_name, 'never']
 
     def url_to_display_name(self, url):
+        """Converts a URL to display name in a `prefix/user_or_org_name/repo_name` format."""
         if url.endswith('.git'):
             url = url[:-4]
         url_parts = urlparse(url)
@@ -43,6 +57,7 @@ class PersistentBinderSpawner(KubeSpawner):
         return display_name
 
     def url_to_dir(self, url):
+        """Converts a URL to directory name."""
         display_name = self.url_to_display_name(url)
         dir_name = ''.join([c if c.isalnum() or c in ['-', '.'] else '_' for c in display_name])
         if len(dir_name) > 255:
@@ -52,6 +67,19 @@ class PersistentBinderSpawner(KubeSpawner):
         return dir_name
 
     def start(self):
+        """Starts the user's pod with `user_options`, which is set by binder.
+        Before starting the notebook server, starts an `initContainer` which
+        first gets the information of projects to delete from state["deleted_projects"] (`spawners` table),
+        then deletes these projects on disk (user storage),
+        and then copies content of image's home folder into project directory if project dir doesn't exist.
+
+        Starts the notebook server with 2 mounts,
+        first one is the user storage (where all projects take place), which is mounted to `/projects` and
+        second one is currently launched project's dir on user storage, which is mounted to `/home/jovyan`.
+
+        Note: init and notebooks containers shares a volume (user storage), that's how project content, which is
+        copied by init container, is also available to notebook container.
+        """
         # clean attributes, so we dont save wrong values in state when error happens
         for attr in ('repo_url', 'ref', 'image'):
             self.__dict__.pop(attr, None)
@@ -66,7 +94,7 @@ class PersistentBinderSpawner(KubeSpawner):
             # NOTE: user can pass any options through API (without using binder) too
             self.image = self.user_options['image']
             self.ref = self.image.split(':')[-1]
-            # repo_url is generated in bhub by repo providers
+            # repo_url is generated in binderhub by repo providers
             self.repo_url = self.user_options['repo_url']
             # strip .git at the end
             if self.repo_url.endswith('.git'):
@@ -74,21 +102,23 @@ class PersistentBinderSpawner(KubeSpawner):
         else:
             # if user never launched a repo before (user_options in database is empty)
             # and user is trying to start the server via spawn url
-            # normally this shouldn't happen,
-            # we can't display a message to user, and raising errors cause hub to restart
-            # so launch a repo until we handle this better
-            # but first be sure that user has no valid projects
+            # normally this shouldn't happen and
+            # it would be good but we can't display a message to user, and raising errors cause hub to restart
+            # so (as a workaround) launch a repo until we handle this better FIXME
             projects = self.get_state_field('projects')
             if projects and projects[-1][1]:
+                # first be sure that user has no valid projects
                 self.repo_url, self.image, self.ref, display_name, _ = projects[-1]
+                self.log.warning(f"Project '{self.repo_url}' with '{self.image}' doesn't exist in user_options.")
             else:
-                msg = "User ({}) is trying to start the server via spawn url.".format(self.user.name)
+                msg = f"User ({self.user.name}) is trying to start the server via spawn url."
                 # self.handler.redirect("/hub/home")
                 # raise Exception(msg)
                 self.log.info(msg)
                 self.repo_url = "https://github.com/gesiscss/persistent_binderhub"
                 self.image = "gesiscss/binder-gesiscss-2dpersistent-5fbinderhub-ab107f:737a0febb40ea1cb47776e4d36bd9decbf244b3f"
                 self.ref = self.image.split(':')[-1]
+        self.log.info(f"User ({self.user.name}) is launching '{self.repo_url}' project with '{self.image}'.")
 
         # prepare the initContainer
         # NOTE: first initContainer runs and when it is done, then notebook container runs
@@ -99,8 +129,11 @@ class PersistentBinderSpawner(KubeSpawner):
         # first it deletes projects on disk (if there are any to delete)
         # get list of projects to delete from disk before spawn in initContainer
         deleted_projects = self.get_state_field('deleted_projects')
-        delete_cmd = f"rm -rf {' '.join([join(mount_path, self.url_to_dir(d)) for d in deleted_projects])}" \
-                     if deleted_projects else ""
+        if deleted_projects:
+            delete_cmd = f"rm -rf {' '.join([join(mount_path, self.url_to_dir(d)) for d in deleted_projects])}"
+            self.log.info(f"Following projects will be deleted for user ({self.user.name}): {deleted_projects}")
+        else:
+            delete_cmd = ""
         # then copies image's home folder (repo content after r2d process)
         # into project's dir on disk (if project_path doesnt exists on persistent disk)
         project_dir = self.url_to_dir(self.repo_url)
@@ -111,20 +144,22 @@ class PersistentBinderSpawner(KubeSpawner):
                    f"then echo '{project_path} is a symlink'; " \
                    f"else mkdir {project_path} && cp -a ~/. {project_path}; fi"
         init_container_cmds = [delete_cmd, copy_cmd] if delete_cmd else [copy_cmd]
+        command = ["/bin/sh", "-c", " && ".join(init_container_cmds)]
+        self.log.debug(f"Following command will be executed for user ({self.user.name}): {command}")
         projects_volume_mount = {'name': self.volumes[0]['name'], 'mountPath': mount_path}
         self.init_containers = [{
             "name": "project-manager",
             "image": self.image,
-            "command": ["/bin/sh", "-c", " && ".join(init_container_cmds)],
+            "command": command,
             # volumes is already defined for notebook container (self.volumes)
             "volume_mounts": [projects_volume_mount],
         }]
 
         # notebook container (user server)
         # mount all projects (complete user disk) to /projects
-        # first remove existing volume mounts to /projects, it should be unique,
+        # first remove existing volume mounts to /projects, this mount path should be unique,
         # normally we shouldn't need this, but sometimes there is duplication when there is a spawn error
-        # for example timeout error due to long docker pull (of server image)
+        # for example timeout error due to long docker pull (of a server image)
         for i, v_m in enumerate(self.volume_mounts):
             if v_m['mountPath'] == projects_volume_mount['mountPath']:
                 del self.volume_mounts[i]
@@ -140,26 +175,33 @@ class PersistentBinderSpawner(KubeSpawner):
         self.reset_deleted_projects = True
         return super().start()
 
-    def get_state_field(self, name):
-        """Returns just current value of a field in state, doesn't update anything in state"""
+    def get_state_field(self, field_name):
+        """Returns just current value of a field in state, doesn't update anything in spawner's state."""
         self.update_projects = False
         reset_deleted_projects = getattr(self, 'reset_deleted_projects', False)
         self.reset_deleted_projects = False
         state = self.get_state()
         self.update_projects = True
         self.reset_deleted_projects = reset_deleted_projects
-        return state[name]
+        return state[field_name]
 
     def get_state(self):
-        """Use this method to update projects, because this method is called both in
+        """Updates state["projects"] in `spawners` table and returns the updated state value.
+
+        We use this method to update projects, because this method is called both in
         start and stop of the server (see jupyterhub.User's `start` and `stop` methods),
         db.commit is called after these methods.
         """
         _state = self.orm_spawner.state
-        # if user never launched project (state is empty), use default_project
-        projects = _state.get('projects', []) if _state else [self.default_project]
-        deleted_projects = _state.get('deleted_projects', []) if _state else []
-
+        if _state:
+            # user already launched a project (started its server), spawner has a state
+            projects = _state.get('projects', [])
+            deleted_projects = _state.get('deleted_projects', [])
+        else:
+            # if user never launched project (state is empty), use default_project
+            projects = [self.default_project]
+            deleted_projects = []
+            self.log.info(f"User ({self.user.name}) hasn't launched a project yet.")
         state = super().get_state()
         state['projects'] = projects
         state['deleted_projects'] = deleted_projects
@@ -167,7 +209,7 @@ class PersistentBinderSpawner(KubeSpawner):
         if getattr(self, 'update_projects', True) is True and \
            hasattr(self, 'repo_url') and hasattr(self, 'image') and hasattr(self, 'ref'):
             # project is started or already running or is stopped,
-            # so move project to the end and update the last launched time (last seen)
+            # so move project to the end and update the "last used" time
             from datetime import datetime
             e = [self.repo_url, self.image, self.ref, self.url_to_display_name(self.repo_url), datetime.utcnow().isoformat() + 'Z']
             new_projects = []
@@ -176,6 +218,7 @@ class PersistentBinderSpawner(KubeSpawner):
                     new_projects.append(p)
             new_projects.append(e)
             state['projects'] = new_projects
+            self.log.info(f"User ({self.user.name}) has just used the project {self.repo_url}.")
 
         if getattr(self, 'reset_deleted_projects', False) is True:
             state['deleted_projects'] = []
@@ -197,19 +240,26 @@ class PersistentBinderSpawner(KubeSpawner):
 
 
 class ProjectAPIHandler(APIHandler):
+    """A JupyterHub API handler to manage user projects."""
     @admin_only
-    async def get(self, name):
+    async def get(self, user_name):
+        """Takes a user name and returns projects of that user."""
         # get user's projects
-        user = self.find_user(name)
+        user = self.find_user(user_name)
         if not user:
             raise web.HTTPError(404)
         projects = {'projects': user.spawner.get_state_field('projects')}
         self.write(json.dumps(projects))
 
     @admin_or_self
-    async def delete(self, name):
+    async def delete(self, user_name):
+        """Deletes a project from state["projects"] and adds it into state["deleted_projects"]
+        in `spawners` table in database. It doesn't delete project files on disk (user storage),
+        this is done by `InitContainer` during launch of a project next time.
+        If user has a running server, this method returns a message to user and doesn't do any change.
+        """
         # delete a project of user
-        user = self.find_user(name)
+        user = self.find_user(user_name)
         response = {}
         if user.running:
             response["error"] = "Project deletion is not allowed while the user server is running."
@@ -235,11 +285,14 @@ class ProjectAPIHandler(APIHandler):
                     state["deleted_projects"] = deleted_projects
                     user.spawner.orm_spawner.state = state
                     self.db.commit()
-
-                    response["success"] = f"Project {body['name']} is deleted."
+                    message = f"Project {body['name']} is deleted."
+                    self.log.info(f"{user.name}: {message}")
+                    response["success"] = message
                     response["id"] = body["id"]
                 else:
-                    response["error"] = f"Project {body['name']} ({body['repo_url']}) doesn't exist."
+                    message = f"Project {body['name']} ({body['repo_url']}) doesn't exist."
+                    self.log.info(f"{user.name}: {message}")
+                    response["error"] = message
             else:
                 response["error"] = "Bad request."
         self.write(json.dumps(response))
