@@ -1,0 +1,20 @@
+apiVersion: v1
+entries:
+  persistent_binderhub:
+  - apiVersion: v1
+    created: "2020-04-15T17:57:33.786058024+02:00"
+    description: A Helm chart for persistent BinderHub deployment
+    digest: 08646e9274716c4f603cb7d92d17d0fa19e969ee0f4ecb3b725bad551b5337b2
+    home: https://github.com/gesiscss/persistent_binderhub
+    keywords:
+    - binderhub
+    - persistent
+    - storage
+    maintainers:
+    - email: kenan.erdogan@gesis.org
+      name: Kenan Erdogan
+    name: persistent_binderhub
+    urls:
+    - https://gesiscss.github.io/persistent_binderhub/docs/persistent_binderhub-0.2.0-n134.tgz
+    version: 0.2.0-n134
+generated: "2020-04-15T17:57:33.781080391+02:00"

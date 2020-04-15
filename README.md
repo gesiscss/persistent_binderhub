@@ -83,16 +83,15 @@ binderhub:
 To install the chart with the release name `pbhub` into namespace `pbhub-ns`:
 
 ```bash
-git clone https://github.com/gesiscss/persistent_binderhub.git
-cd persistent_binderhub
-
-# fetch the required charts (BinderHub and JupyterHub charts) into charts folder
-helm dependency update persistent_binderhub
+# Add the persistent_binderhub helm chart repo
+helm repo add persistent_binderhub https://gesiscss.github.io/persistent_binderhub/
+# update charts
+helm repo update
 
 # you can change release name and namespace as you want
 RELEASENAME=pbhub
 NAMESPACE=pbhub-ns
-helm upgrade $RELEASENAME persistent_binderhub \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
              --install \
              --namespace=$NAMESPACE \
              -f local/minikube/config.yaml \
