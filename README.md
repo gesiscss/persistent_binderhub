@@ -18,6 +18,7 @@ and you are familiar with [enabling authentication](https://binderhub.readthedoc
    * [Repo providers](#repo-providers)
    * [Spawner](#spawner)
 * [Local development](#local-development)
+* [Migrating from JupyterHub chart](#migrating-from-jupyterhub-chart)
 * [Limitations](#limitations)
 
 ## Prerequisites
@@ -228,6 +229,17 @@ binderhub:
 ## Local development
 
 In [local/minikube](local/minikube) folder you can find instructions and configuration file to install this chart in minikube.
+
+## Migrating from JupyterHub chart
+
+Be aware that this is not tested widely, 
+but it should be safe to migrate from [JupyterHub chart](https://zero-to-jupyterhub.readthedocs.io/) to this chart.
+
+Here are the differences compared to fresh installation of this chart:
+- after migration, existing users will have no default project in the beginning
+- files of existing users won't be copied to anywhere,
+  existing users can find them under `/projects` dir and 
+  they should manage them manually via terminal
 
 ## Limitations
 
