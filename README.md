@@ -98,6 +98,8 @@ helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
              --debug
 ```
 
+Here you can find the list of charts: https://gesiscss.github.io/persistent_binderhub/
+
 ## Uninstalling the chart
 
 ```bash
