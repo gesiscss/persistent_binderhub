@@ -4,7 +4,7 @@
 <p>See installation instructions at <a href="https://github.com/gesiscss/persistent_binderhub">Persistent BinderHub</a></p>
 
 <h2>Releases</h2>
-{% assign all_charts = site.index.entries.persistent_binderhub | sort: 'created' | reverse %}
+{% assign all_charts = site.data.index.entries.persistent_binderhub | sort: 'created' | reverse %}
 <table>
   <tr>
     <th>release</th>
