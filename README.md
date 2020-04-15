@@ -91,7 +91,7 @@ helm repo update
 # you can change release name and namespace as you want
 RELEASENAME=pbhub
 NAMESPACE=pbhub-ns
-helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n134 \
              --install \
              --namespace=$NAMESPACE \
              -f local/minikube/config.yaml \
