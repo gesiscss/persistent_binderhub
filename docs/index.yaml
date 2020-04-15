@@ -15,6 +15,6 @@ entries:
       name: Kenan Erdogan
     name: persistent_binderhub
     urls:
-    - https://gesiscss.github.io/persistent_binderhub/docs/persistent_binderhub-0.2.0-n134.tgz
+    - https://gesiscss.github.io/persistent_binderhub/persistent_binderhub-0.2.0-n134.tgz
     version: 0.2.0-n134
 generated: "2020-04-15T17:57:33.781080391+02:00"
