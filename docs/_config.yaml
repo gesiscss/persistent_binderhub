@@ -1,1 +1,2 @@
 title: persistent BinderHub Helm charts
+description: Using github pages to host persistent BinderHub Helm charts under `docs/` directory
