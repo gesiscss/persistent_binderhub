@@ -1,1 +1,1 @@
-Default project for [persistent BinderHub chart](https://github.com/gesiscss/persistent_binderhub)
+Default project for the [persistent BinderHub chart](https://github.com/gesiscss/persistent_binderhub)

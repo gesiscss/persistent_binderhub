@@ -1,6 +1,15 @@
 apiVersion: v1
-description: A Helm chart for persistent BinderHub deployment
 name: persistent_binderhub
+description: A Helm chart for persistent BinderHub deployment
 # Note: update version in sync with binderhub version
 # when we change this chart without upgrading the binderhub, then just increment the patch version
 version: 0.2.0-n134
+keywords:
+  - binderhub
+  - persistent
+  - storage
+home: https://github.com/gesiscss/persistent_binderhub
+maintainers:
+  - name: Kenan Erdogan
+    email: kenan.erdogan@gesis.org
+#icon: A URL to an SVG or PNG image to be used as an icon (optional).

@@ -1,4 +1,6 @@
 binderhub:
+  # Helm config for BinderHub goes here
+  # see https://github.com/jupyterhub/binderhub/blob/master/helm-chart/binderhub/values.yaml
   pdb:
     minAvailable: 0
   # NOTE: binder pod must have 1 replica,
@@ -60,6 +62,8 @@ binderhub:
     allowOrigin: '*'
 
   jupyterhub:
+    # Helm config for JupyterHub goes here
+    # see https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/master/jupyterhub/values.yaml
     custom:
       cors: *cors
       binderauth_enabled: true
