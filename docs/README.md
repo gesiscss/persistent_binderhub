@@ -20,7 +20,7 @@ helm lint persistent_binderhub/
 #helm dependency update persistent_binderhub
 # package the chart
 helm package -u persistent_binderhub/
-mv persistent_binderhub-0.2.0-n134.tgz docs/
+mv persistent_binderhub-<version>.tgz docs/
 
 # create the index.yaml with chart info
 #helm repo index --url https://gesiscss.github.io/persistent_binderhub/ docs/.
@@ -28,10 +28,10 @@ mv persistent_binderhub-0.2.0-n134.tgz docs/
 helm repo index --url https://gesiscss.github.io/persistent_binderhub/ --merge docs/index.yaml docs/.
 
 git add docs/index.yaml docs/persistent_binderhub-0.2.0-n134.tgz
-git commit -m "persistent_binderhub-0.2.0-n134.tgz"
+git commit -m "persistent_binderhub-<version>.tgz"
 git push
 # use version of the chart for tag
-git tag 0.2.0-n134
+git tag <version>
 git push --tags
 
 ```
