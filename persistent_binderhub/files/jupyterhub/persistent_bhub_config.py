@@ -18,15 +18,15 @@ from kubespawner import KubeSpawner
 
 class PersistentBinderSpawner(KubeSpawner):
     """Assuming that each user has a storage (Persistent Volume)
-    - copies launched project's data in a separate folder by using `initContainers`.
-      So in the project folder we have the same content as provided by repo2docker.
+    - copies launched project's data (repo content) into a separate directory by using `initContainers`.
+      So in the project dir we have the same content as provided by repo2docker.
       This is particularly important because projects may use further features of repo2docker such as the postBuild script.
-    - deletes folder of projects, which are in state["deleted_projects"] of `spawners` table
-    - mounts user’s PV somewhere other than the home folder (to /projects), so that users can access files across multiple projects
-    - mounts folder of launched project (from user’s PV) into the home folder (/home/jovyan)
-    - starts a notebook server on /home/jovyan which is the default behavior of BinderHub. Takes project information
-      (e.g. image and repo url) from `user_options`, which is set by binder.
-    - adds/updates data of launched project into state["projects"] of `spawners` table
+    - deletes dirs of projects, which are in state["deleted_projects"] of `spawners` table
+    - mounts user’s PV somewhere other than the home dir (to /projects), so that users can access files across multiple projects
+    - mounts the dir of the launched project (from user’s PV) into the home dir (/home/jovyan)
+    - starts a notebook server on `/home/jovyan` which is the default behavior of BinderHub.
+      Takes project information (e.g. image and repo url) from `user_options`, which is set by binder.
+    - adds/updates data of the launched project into state["projects"] of `spawners` table
     """
     def __init__(self, **kwargs):
         super(PersistentBinderSpawner, self).__init__(**kwargs)
@@ -71,11 +71,11 @@ class PersistentBinderSpawner(KubeSpawner):
         Before starting the notebook server, starts an `initContainer` which
         first gets the information of projects to delete from state["deleted_projects"] (`spawners` table),
         then deletes these projects on disk (user storage),
-        and then copies content of image's home folder into project directory if project dir doesn't exist.
+        and then copies content of image's home dir into project dir if project dir doesn't exist.
 
         Starts the notebook server with 2 mounts,
         first one is the user storage (where all projects take place), which is mounted to `/projects` and
-        second one is currently launched project's dir on user storage, which is mounted to `/home/jovyan`.
+        second one is currently launched project's dir on the user storage, which is mounted to `/home/jovyan`.
 
         Note: init and notebooks containers shares a volume (user storage), that's how project content, which is
         copied by init container, is also available to notebook container.
@@ -134,7 +134,7 @@ class PersistentBinderSpawner(KubeSpawner):
             self.log.info(f"Following projects will be deleted for user ({self.user.name}): {deleted_projects}")
         else:
             delete_cmd = ""
-        # then copies image's home folder (repo content after r2d process)
+        # then copies image's home dir (repo content after r2d process)
         # into project's dir on disk (if project_path doesnt exists on persistent disk)
         project_dir = self.url_to_dir(self.repo_url)
         project_path = join(mount_path, project_dir)

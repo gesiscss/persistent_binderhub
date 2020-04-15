@@ -147,7 +147,7 @@ Note: `jupyter/repo2docker:0.11.0-34.gd366af9` is the repo2docker version used i
 A project is simply a binder-ready repository that you launch in a persistent BinderHub. 
 
 Default project is this repo itself by default 
-(check `.binder` folder, there is `intro_to_persistent_binderhub` notebook). 
+(check [.binder folder](.binder), there is `intro_to_persistent_binderhub` notebook). 
 
 Assuming that you have a binder-ready repo with the following information
 - repo url: `https://github.com/user_name/repo_name`
@@ -164,7 +164,7 @@ binderhub:
         ref: "ref"
 ```
 
-Warning: Default project must be a binder-ready repo, e.g. https://github.com/binder-examples/requirements
+Warning: Default project must be a binder-ready repo, e.g. https://github.com/binder-examples/requirements.
 
 ### Projects limit per user
 
@@ -210,7 +210,7 @@ binderhub:
 ### Spawner
 
 This chart uses the 
-[PersistentBinderSpawner](https://github.com/gesiscss/persistent_binderhub/blob/master/persistent_binderhub/files/jupyterhub/persistent_bhub_config.py#L18).
+[PersistentBinderSpawner](https://github.com/gesiscss/persistent_binderhub/blob/master/persistent_binderhub/files/jupyterhub/persistent_bhub_config.py#L19).
 If you want to customize it, you can subclass it in `extraConfig`. For example:
 
 ```yaml

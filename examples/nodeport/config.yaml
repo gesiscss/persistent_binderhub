@@ -6,12 +6,10 @@ binderhub:
       hub_url: http://<NodeIP>:30123
       # use only local docker images
       use_registry: false
+
   service:
     type: NodePort
     nodePort: 30124
-
-  dind:
-    enabled: false
 
   imageCleaner:
     enabled: false
