@@ -24,9 +24,9 @@ If you want to deploy a test persistent BinderHub with this config:
 2. then assuming that you are at repo root, run
 ```bash
 helm dependency update persistent_binderhub
+kubectl create namespace pbhub-test-ns
 helm upgrade pbhub-test persistent_binderhub \
-             --install \
-             --namespace=pbhub-test-ns \
+             --install --namespace=pbhub-test-ns \
              -f examples/nodeport/config.yaml \
              --debug
 

@@ -5,7 +5,9 @@ and then start it:
 
 `minikube start`
 
-2. Install and initialize helm [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:
+2. Install and initialize helm:
+
+2.1. Helm 2 [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:
 ```bash
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 helm init
@@ -13,6 +15,14 @@ helm init
 helm version
 
 ```
+
+2.2. Helm 3 [[2](https://helm.sh/docs/intro/install/#from-script)]:
+```bash
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+helm version
+
+```
+
 Before starting your local deployment run:
 
 `eval $(minikube docker-env)`
@@ -33,9 +43,9 @@ helm dependency update persistent_binderhub
 # test local config
 helm template persistent_binderhub -f local/minikube/config.yaml
 # install it in minikube cluster
-helm upgrade pbhub-dev persistent_binderhub \
-             --install \
-             --namespace=pbhub-dev-ns \
+kubectl create namespace pbhub-dev-ns
+helm upgrade pbhub-dev persistent_binderhub/. \
+             --install --namespace=pbhub-dev-ns \
              -f local/minikube/config.yaml \
              --debug
 
@@ -50,9 +60,8 @@ which you acquired in the previous step
 and run helm installation command again:
 
 ```bash
-helm upgrade pbhub-dev persistent_binderhub \
-             --install \
-             --namespace=pbhub-dev-ns \
+helm upgrade pbhub-dev persistent_binderhub/. \
+             --install --namespace=pbhub-dev-ns \
              -f local/minikube/config.yaml \
              --debug
 
@@ -73,7 +82,10 @@ You can exit watching by `CTRL+C`.
 
 ```bash
 # to delete the Helm release
+# if using helm 2
 helm delete pbhub-dev --purge
+# if using helm 3
+helm delete pbhub-dev --namespace=pbhub-dev-ns
 # to delete the Kubernetes namespace
 kubectl delete namespace pbhub-dev-ns
 
