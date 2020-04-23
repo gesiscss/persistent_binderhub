@@ -83,19 +83,18 @@ binderhub:
         - name: persistent-bhub-templates
           configMap:
             name: persistent-bhub-templates
-        - name: persistent-bhub-styles
+        - name: persistent-bhub-statics
           configMap:
-            name: persistent-bhub-styles
+            name: persistent-bhub-statics
         - name: persistent-bhub-config
           configMap:
             name: persistent-bhub-config
       extraVolumeMounts:
         - name: persistent-bhub-templates
           mountPath: /etc/jupyterhub/templates
-        - name: persistent-bhub-styles
-          # mount to where jupyterhub css files are
-          mountPath: /usr/local/share/jupyterhub/static/css/persistent_bhub.css
-          subPath: persistent_bhub.css
+        - name: persistent-bhub-statics
+          # mount to where jupyterhub static files are
+          mountPath: /usr/local/share/jupyterhub/static/persistent_bhub
         - name: persistent-bhub-config
           # mount to where jupyterhub_config.py is,
           # we import the spawner class from persistent_bhub_config inside jupyterhub_config.py (hub.extraConfig)
@@ -103,6 +102,8 @@ binderhub:
           subPath: persistent_bhub_config.py
       templatePaths:
         - "/etc/jupyterhub/templates"
+      templateVars:
+        persistency_explanation: "Have a Binder-Ready repository? With Persistent BinderHub, turn this repository into a persistent Jupyter environment, allowing you to continue your analysis from anywhere at any time."
       #authenticatePrometheus: false
       redirectToServer: false
       services:

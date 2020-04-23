@@ -1,0 +1,74 @@
+        {% set projects = user.spawner.get_state_field('projects') %}
+        <div class="projects-container{% if not projects %} no-projects{% endif %}">
+          <h3>Your Projects</h3>
+          <div class="table-responsive">
+           <table id="your-projects" class="table table-striped{% if not projects %} hidden{% endif %}">
+               <thead>
+               <tr>
+                   <th>Repository</th>
+                   <th>Commit</th>
+                   <th>Last used</th>
+                   <th>Actions</th>
+               </tr>
+               </thead>
+               <tbody>
+                  {% for project in projects %}
+                  <tr>
+                      {% set project_running = loop.index == loop.length and user.running %}
+                      {% set project_active = loop.index == loop.length and user.spawner.active %}
+                      {% set project_not_active = user.spawner._stop_pending or (user.spawner.active and loop.index != loop.length) %}
+                      <td class="projects-cell projects-display-name"><a href="{{ project[0] }}" target="_blank">{{ project[3] }}</a></td>
+                      <td class="projects-cell">{{ project[2][:7] }}</td>
+                      <td class="projects-cell time-col" id="last-used-{{ project[2] }}">{% if project_running %}running{% else %}{{ project[4] }}{% endif %}</td>
+                      <td class="projects-cell">
+                          {% if project_running %}
+                          {# last element in projects is currently running, add Stop button for it #}
+                          <a id="stop" role="button" class="btn btn-sm btn-danger" data-ref="{{ project[2] }}">Stop</a>
+                          {% endif %}
+                          {# add launch button for each element, if user has no server running #}
+                          {# if last element is running, hide launch buttons of all other elements #}
+                          <a role="button" id="launch-{{ project[2] }}"
+                             class="project-launch btn btn-sm {% if project_active %}btn-primary{% else %}btn-warning{% endif %}{% if project_not_active %} hidden{% endif %}"
+                             href="{% if project_active %}{{ url }}{% else %}#{% endif %}"
+                             data-url="{{ project[0] }}">
+                             {% if project_active %}My Server{% else %}Launch{% endif %}
+                          </a>
+                          <a role="button" id="delete-{{ project[2] }}"
+                             class="project-delete btn btn-sm btn-danger{% if user.spawner.active %} hidden{% endif %}"
+                             href="#" title="Delete from projects list and persistent storage"
+                             data-url="{{ project[0] }}"
+                             data-name="{{ project[3] }}"
+                             data-toggle="modal" data-target="#delete-project">
+                             Delete
+                          </a>
+                       </td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+           </table>
+          <span id="no-projects" {% if projects %}class="hidden"{% endif %}>You have no projects.</span>
+          </div>
+        </div>
+        {# Modal for project deletion dialog #}
+        <div class="modal fade" id="delete-project" tabindex="-1" role="dialog" aria-labelledby="delete-project-label">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button id="delete-close" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete-project-label">Delete a project</h4>
+              </div>
+              <div class="modal-body" id="delete-project-body">
+                <span id="delete-project-text">Are you sure that you want to delete the project?</span>
+                <br>
+                <label class="delete-project-label"><input type="checkbox" id="delete-on-disk"> I do understand that this also deletes the files associated with this project.</label>
+                <input type="hidden" id="delete-url" value=""/>
+                <input type="hidden" id="delete-id" value=""/>
+                <input type="hidden" id="delete-name" value=""/>
+              </div>
+              <div id="delete-project-error" class="alert alert-danger hidden"></div>
+              <div class="modal-footer">
+                <button type="button" id="delete-confirm" class="btn btn-default btn-danger" disabled>Delete now</button>
+              </div>
+            </div>
+          </div>
+        </div>
