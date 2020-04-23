@@ -1,7 +1,8 @@
 <html>
 <body>
 
-<p>Installation instructions for <a href="https://github.com/gesiscss/persistent_binderhub">Persistent BinderHub</a></p>
+<p>Installation instructions for Persistent BinderHub: 
+<a href="https://github.com/gesiscss/persistent_binderhub">https://github.com/gesiscss/persistent_binderhub</a></p>
 
 <h2>Releases</h2>
 {% assign all_charts = site.data.index.entries.persistent_binderhub | sort: 'created' | reverse %}
