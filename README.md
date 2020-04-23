@@ -96,6 +96,10 @@ helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.
              --install --namespace=$NAMESPACE \
              -f local/minikube/config.yaml \
              --debug
+
+# search command returns only stable releases
+helm search persistent_binderhub
+
 ```
 
 Here you can find the list of charts: https://gesiscss.github.io/persistent_binderhub/
@@ -111,7 +115,7 @@ kubectl delete namespace $NAMESPACE
 
 ## Customization
 
-As mentioned before, this chart extends the BinderHub chart in order to bring persistent storage feature. 
+As mentioned before, this chart extends the BinderHub chart in order to bring persistency in. 
 To do that this chart also uses `extraConfig` from JupyterHub and BinderHub charts. While using persistent BinderHub chart, 
 you should use another name for your `extraConfig`s, 
 unless you want to overwrite defaults of this chart and you know what you are doing. 
@@ -139,10 +143,10 @@ For example, if you want to use another version of repo2docker to build repos, a
 binderhub:
   config:
     BinderHub:
-      build_image: jupyter/repo2docker:0.11.0-34.gd366af9
+      build_image: jupyter/repo2docker:0.11.0-52.g175b930
 ```
 
-Note: `jupyter/repo2docker:0.11.0-34.gd366af9` is the repo2docker version used in this chart.
+Note: `jupyter/repo2docker:0.11.0-52.g175b930` is the repo2docker version used in this chart.
 
 ### Default project
 
