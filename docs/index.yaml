@@ -22,7 +22,7 @@ entries:
     - https://gesiscss.github.io/persistent_binderhub/persistent_binderhub-0.2.1-n134.tgz
     version: 0.2.1-n134
   - apiVersion: v1
-    created: "2020-04-23T11:47:47.447769484+02:00"
+    created: "2020-04-15T17:57:33.786058024+02:00"
     dependencies:
     - name: binderhub
       repository: https://jupyterhub.github.io/helm-chart
