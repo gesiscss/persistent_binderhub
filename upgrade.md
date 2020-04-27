@@ -21,14 +21,14 @@
 ### If updating/fixing files of this chart
 
 1. Do your changes
-2. Upgrade chart version in `persistent_binderhub/Chart.yaml`, you should only update the patch version, 
-   the `-nxyz` part must stay same as in version of BinderHub chart
+2. Upgrade chart version in `persistent_binderhub/Chart.yaml`, you should only add .n at the end, e.g. 0.2.0-n153.1 or 0.2.0-n153.2. 
+   The `-nxyz` part must stay same as in version of BinderHub chart
 
 ## How to add a new chart into chart repo
 
 When you made changes to this repo and want to create a new version,
 
-1. First update README.md (version of chart in "Installing the chart" section) and commit
+1. First update README.md (version of chart in "Installing the chart" section) and `binderhub.jupyterhub.custom.default_project.ref` in values.yaml and commit
 
 2.
 ```bash

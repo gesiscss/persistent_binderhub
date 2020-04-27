@@ -2,8 +2,9 @@ apiVersion: v1
 name: persistent_binderhub
 description: A Helm chart for persistent BinderHub deployment
 # Note: update version in sync with binderhub version
-# when we change this chart without upgrading the binderhub, then just increment the patch version
-version: 0.2.1-n134
+# when we change this chart without upgrading the binderhub,
+# then just add .n at the end, e.g. 0.2.0-n153.1 or 0.2.0-n153.2
+version: 0.2.0-n153
 keywords:
   - binderhub
   - persistent
