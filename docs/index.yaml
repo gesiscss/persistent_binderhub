@@ -18,7 +18,7 @@ entries:
     - https://gesiscss.github.io/persistent_binderhub/persistent_binderhub-0.2.0-n153.tgz
     version: 0.2.0-n153
   - apiVersion: v1
-    created: "2020-04-27T10:42:07.932706665+02:00"
+    created: "2020-04-15T17:57:33.786058024+02:00"
     description: A Helm chart for persistent BinderHub deployment
     digest: 08646e9274716c4f603cb7d92d17d0fa19e969ee0f4ecb3b725bad551b5337b2
     home: https://github.com/gesiscss/persistent_binderhub
