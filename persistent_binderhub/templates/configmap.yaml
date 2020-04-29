@@ -3,11 +3,7 @@ apiVersion: v1
 metadata:
   name: persistent-bhub-templates
   labels:
-    app: persistent-bhub
-    component: hub
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- include "persistent_binderhub.configmap_labels" . | indent 4 }}
 data:
   {{- (.Files.Glob "files/jupyterhub/templates/*").AsConfig | nindent 2 }}
 ---
@@ -16,11 +12,7 @@ apiVersion: v1
 metadata:
   name: persistent-bhub-statics
   labels:
-    app: persistent-bhub
-    component: hub
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- include "persistent_binderhub.configmap_labels" . | indent 4 }}
 data:
   {{- (.Files.Glob "files/jupyterhub/statics/*").AsConfig | nindent 2 }}
 ---
@@ -29,11 +21,7 @@ apiVersion: v1
 metadata:
   name: persistent-bhub-config
   labels:
-    app: persistent-bhub
-    component: hub
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- include "persistent_binderhub.configmap_labels" . | indent 4 }}
 data:
   persistent_bhub_config.py: |-
     {{- .Files.Get "files/jupyterhub/persistent_bhub_config.py" | nindent 4 }}

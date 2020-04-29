@@ -1,4 +1,4 @@
-{{/* vim: set filetype=mustache: */}}
+{{/* _helpers.tpl: A place to put template helpers that you can re-use throughout the chart */}}
 {{/*
 Expand the name of the chart.
 */}}
@@ -43,3 +43,13 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{/* Generate labels for configmaps */}}
+{{- define "persistent_binderhub.configmap_labels" }}
+{{ include "persistent_binderhub.labels" . }}
+app: persistent-bhub
+component: hub
+heritage: {{ .Release.Service }}
+release: {{ .Release.Name }}
+chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+{{- end }}
