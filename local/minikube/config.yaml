@@ -11,6 +11,10 @@ binderhub:
       # use only local docker images
       use_registry: false
 
+  extraEnv:
+    - name: PROJECTS_LIMIT_PER_USER
+      value: "2"
+
   service:
     type: NodePort
     nodePort: 30124
