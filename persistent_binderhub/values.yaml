@@ -41,7 +41,7 @@ binderhub:
             body = json.loads(resp.body.decode('utf-8'))
             projects = body['projects']
             if projects:
-              projects_repo_list = [p[0] for p in projects]
+              projects_repo_list = [p['repo_url'] for p in projects]
               if repo_url not in projects_repo_list and len(projects) >= projects_limit:
                   raise web.HTTPError(409, "No more than {} projects is allowed. "
                                            "One must be deleted before a new project can be created.".

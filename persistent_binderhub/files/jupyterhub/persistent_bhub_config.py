@@ -35,7 +35,13 @@ class PersistentBinderSpawner(KubeSpawner):
         default_project = z2jh.get_config('custom.default_project')
         display_name = self.url_to_display_name(default_project["repo_url"])
         # default_project is only to use when first login
-        self.default_project = [default_project["repo_url"], '', default_project["ref"], display_name, 'never']
+        self.default_project = {
+            "repo_url": default_project["repo_url"],
+            "image": "",
+            "ref": default_project["ref"],
+            "display_name": display_name,
+            "last_used": "never",
+        }
 
     def url_to_display_name(self, url):
         """Converts a URL to display name in a `prefix/user_or_org_name/repo_name` format."""
@@ -106,9 +112,11 @@ class PersistentBinderSpawner(KubeSpawner):
             # it would be good but we can't display a message to user, and raising errors cause hub to restart
             # so (as a workaround) launch a repo until we handle this better FIXME
             projects = self.get_state_field('projects')
-            if projects and projects[-1][1]:
+            if projects and projects[-1].get("image"):
                 # first be sure that user has no valid projects
-                self.repo_url, self.image, self.ref, display_name, _ = projects[-1]
+                self.repo_url = projects[-1]["repo_url"]
+                self.image = projects[-1]["image"]
+                self.ref = projects[-1]["ref"]
                 self.log.warning(f"Project '{self.repo_url}' with '{self.image}' doesn't exist in user_options.")
             else:
                 msg = f"User ({self.user.name}) is trying to start the server via spawn url."
@@ -159,7 +167,7 @@ class PersistentBinderSpawner(KubeSpawner):
         # mount all projects (complete user disk) to /projects
         # first remove existing volume mounts to /projects, this mount path should be unique,
         # normally we shouldn't need this, but sometimes there is duplication when there is a spawn error
-        # for example timeout error due to long docker pull (of a server image)
+        # for example timeout error due to long docker pull (of a notebook server image)
         for i, v_m in enumerate(self.volume_mounts):
             if v_m['mountPath'] == projects_volume_mount['mountPath']:
                 del self.volume_mounts[i]
@@ -196,6 +204,21 @@ class PersistentBinderSpawner(KubeSpawner):
         if _state:
             # user already launched a project (started its server), spawner has a state
             projects = _state.get('projects', [])
+            _projects = []
+            for project in projects:
+                # to be backwards compatible for version <= 0.2.0-n153
+                # covert list, which contains project data, to dict
+                if isinstance(project, list):
+                    _projects.append({
+                        "repo_url": project[0],
+                        "image": project[1],
+                        "ref": project[2],
+                        "display_name": project[3],
+                        "last_used": project[4],
+                    })
+                else:
+                    _projects.append(project)
+            projects = _projects
             deleted_projects = _state.get('deleted_projects', [])
         else:
             # if user never launched project (state is empty), use default_project
@@ -210,13 +233,18 @@ class PersistentBinderSpawner(KubeSpawner):
            hasattr(self, 'repo_url') and hasattr(self, 'image') and hasattr(self, 'ref'):
             # project is started or already running or is stopped,
             # so move project to the end and update the "last used" time
-            from datetime import datetime
-            e = [self.repo_url, self.image, self.ref, self.url_to_display_name(self.repo_url), datetime.utcnow().isoformat() + 'Z']
             new_projects = []
-            for p in projects:
-                if p[0] != e[0]:
-                    new_projects.append(p)
-            new_projects.append(e)
+            for project in projects:
+                if project["repo_url"] != self.repo_url:
+                    new_projects.append(project)
+            from datetime import datetime
+            new_projects.append({
+                "repo_url": self.repo_url,
+                "image": self.image,
+                "ref": self.ref,
+                "display_name": self.url_to_display_name(self.repo_url),
+                "last_used": datetime.utcnow().isoformat() + 'Z',
+            })
             state['projects'] = new_projects
             self.log.info(f"User ({self.user.name}) has just used the project {self.repo_url}.")
 
@@ -272,7 +300,7 @@ class ProjectAPIHandler(APIHandler):
                 deleted_projects = user.spawner.get_state_field('deleted_projects')
                 found = False
                 for project in projects:
-                    if repo_url != project[0]:
+                    if repo_url != project["repo_url"]:
                         new_projects.append(project)
                     else:
                         found = True

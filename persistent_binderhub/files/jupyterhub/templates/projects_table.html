@@ -17,27 +17,27 @@
                       {% set project_running = loop.index == loop.length and user.running %}
                       {% set project_active = loop.index == loop.length and user.spawner.active %}
                       {% set project_not_active = user.spawner._stop_pending or (user.spawner.active and loop.index != loop.length) %}
-                      <td class="projects-cell projects-display-name"><a href="{{ project[0] }}" target="_blank">{{ project[3] }}</a></td>
-                      <td class="projects-cell">{{ project[2][:16] }}</td>
-                      <td class="projects-cell time-col" id="last-used-{{ project[2] }}">{% if project_running %}running{% else %}{{ project[4] }}{% endif %}</td>
+                      <td class="projects-cell projects-display-name"><a href="{{ project['repo_url'] }}" target="_blank">{{ project['display_name'] }}</a></td>
+                      <td class="projects-cell">{{ project['ref'][:16] }}</td>
+                      <td class="projects-cell time-col" id="last-used-{{ project['ref'] }}">{% if project_running %}running{% else %}{{ project['last_used'] }}{% endif %}</td>
                       <td class="projects-cell">
                           {% if project_running %}
                           {# last element in projects is currently running, add Stop button for it #}
-                          <a id="stop" role="button" class="btn btn-sm btn-danger" data-ref="{{ project[2] }}">Stop</a>
+                          <a id="stop" role="button" class="btn btn-sm btn-danger" data-ref="{{ project['ref'] }}">Stop</a>
                           {% endif %}
                           {# add launch button for each element, if user has no server running #}
                           {# if last element is running, hide launch buttons of all other elements #}
-                          <a role="button" id="launch-{{ project[2] }}"
+                          <a role="button" id="launch-{{ project['ref'] }}"
                              class="project-launch btn btn-sm {% if project_active %}btn-primary{% else %}btn-warning{% endif %}{% if project_not_active %} hidden{% endif %}"
                              href="{% if project_active %}{{ url }}{% else %}#{% endif %}"
-                             data-url="{{ project[0] }}">
+                             data-url="{{ project['repo_url'] }}">
                              {% if project_active %}My Server{% else %}Launch{% endif %}
                           </a>
-                          <a role="button" id="delete-{{ project[2] }}"
+                          <a role="button" id="delete-{{ project['ref'] }}"
                              class="project-delete btn btn-sm btn-danger{% if user.spawner.active %} hidden{% endif %}"
                              href="#" title="Delete from projects list and persistent storage"
-                             data-url="{{ project[0] }}"
-                             data-name="{{ project[3] }}"
+                             data-url="{{ project['repo_url'] }}"
+                             data-name="{{ project['display_name'] }}"
                              data-toggle="modal" data-target="#delete-project">
                              Delete
                           </a>
