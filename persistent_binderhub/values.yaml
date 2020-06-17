@@ -113,6 +113,7 @@ binderhub:
       extraConfig:
         20-template-variables:  |
           import random
+
           c.JupyterHub.template_vars.update({
               "binder_base_url": "/services/binder/",
               "static_binder": "/services/binder/static/",
