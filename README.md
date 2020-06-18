@@ -92,7 +92,7 @@ helm repo update
 RELEASENAME=pbhub
 NAMESPACE=pbhub-ns
 kubectl create namespace $NAMESPACE
-helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n153 \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n181 \
              --install --namespace=$NAMESPACE \
              -f local/minikube/config.yaml \
              --debug

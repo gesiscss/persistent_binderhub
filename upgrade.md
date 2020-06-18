@@ -2,7 +2,7 @@
 
 ### If there is a new version of BinderHub chart
 
-1. http://github.com/jupyterhub/binderhub/compare/b4819f9...X
+1. http://github.com/jupyterhub/binderhub/compare/23ae206...X
 2. If there is a z2jh upgrade: https://github.com/jupyterhub/zero-to-jupyterhub-k8s/compare/X...Y
 3. If there is a JupyterHub upgrade:
  - https://github.com/jupyterhub/jupyterhub/compare/X...Y
@@ -48,6 +48,7 @@ mv persistent_binderhub-<version>.tgz docs/
 #helm repo index --url https://gesiscss.github.io/persistent_binderhub/ docs/.
 # merge the new chart info into index.yaml
 helm repo index --url https://gesiscss.github.io/persistent_binderhub/ --merge docs/index.yaml docs/.
+# fix the `created` date of previous versions 
 
 git add docs/index.yaml docs/persistent_binderhub-<version>.tgz
 git commit -m "persistent_binderhub-<version>.tgz"
