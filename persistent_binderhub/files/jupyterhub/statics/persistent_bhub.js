@@ -138,7 +138,11 @@ $(document).ready(function() {
                 } else {
                     // project is deleted
                     // remove project from "Your Projects" table
-                    $("#"+response["id"]).closest('tr').remove();
+
+                    // jquery cant select by id if id contains dot inside, and we have this case for default project
+                    // so use getElementById
+                    //$("#"+response["id"]).closest('tr').remove();
+                    $(document.getElementById(response["id"])).closest('tr').remove();
                     if ($('#your-projects tr').length === 1) {
                         // user has no projects, so remove empty projects table
                         $('#your-projects').addClass("hidden");

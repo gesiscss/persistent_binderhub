@@ -121,6 +121,7 @@ binderhub:
           })
         10-project-api: |
           from persistent_bhub_config import ProjectAPIHandler
+
           c.JupyterHub.extra_handlers = [(r'/api/projects/([^/]+)', ProjectAPIHandler)]
           # restart_policy is already set 'OnFailure' by kubespawner:
           # https://github.com/jupyterhub/kubespawner/blob/8751773916ccc6b84c998f7950dd3e07fea5ae4e/kubespawner/objects.py#L231
