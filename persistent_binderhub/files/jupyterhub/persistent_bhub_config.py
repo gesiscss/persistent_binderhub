@@ -184,13 +184,18 @@ class PersistentBinderSpawner(KubeSpawner):
 
     def get_state_field(self, field_name):
         """Returns just current value of a field in state, doesn't update anything in spawner's state."""
+        state = self._get_state()
+        return state[field_name]
+
+    def _get_state(self):
+        """Returns just current value of the state, doesn't update anything in spawner's state."""
         self.update_projects = False
         reset_deleted_projects = getattr(self, 'reset_deleted_projects', False)
         self.reset_deleted_projects = False
         state = self.get_state()
         self.update_projects = True
         self.reset_deleted_projects = reset_deleted_projects
-        return state[field_name]
+        return state
 
     def get_state(self):
         """Updates state["projects"] in `spawners` table and returns the updated state value.
@@ -295,6 +300,7 @@ class ProjectAPIHandler(APIHandler):
         projects = {'projects': user.spawner.get_state_field('projects')}
         self.write(json.dumps(projects))
 
+    # FIXME launch paths should be added in PersistentBinderSpawner.start method together with all other data
     @admin_or_self
     async def patch(self, user_name):
         """This is only to update path_type and path information of a project."""
@@ -337,6 +343,7 @@ class ProjectAPIHandler(APIHandler):
 
                 # NOTE: this way we ensure that this JSONDict field (state) is updated with db.commit()
                 state = user.spawner.get_state()
+                # state = user.spawner._get_state()
                 state["projects"] = new_projects
                 # .get_state might empty delete_projects list, so re-insert it
                 state["deleted_projects"] = deleted_projects

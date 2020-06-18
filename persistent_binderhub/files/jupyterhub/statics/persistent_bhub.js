@@ -93,40 +93,39 @@ $(document).ready(function() {
     });
 
     // TODO update launch path data also for loading page
+    // TODO this code accepts repo_url and repo_url+"/" as different repos and then there are errors
     $('button#submit').click(function(e, data) {
         // update launch path only when binder form is used
         // using binder form means: starting a new project or updating an existing one
         // using Your Projects table means only using an existing project as last time used
-        if (data.from_projects_table === true) {
-            console.log(data);
-            return false
-        }
-
-        var path_type = $("#url-or-file-selected").text().trim().toLowerCase();
-        var path = $('#filepath').val().trim();
-        var body = JSON.stringify({repo_url: $('#delete-url').val(),
-                                   path_type: path_type,
-                                   path: path});
-        var user_name = window.jhdata.user;
-        var url = '/hub/api/projects/'+user_name;
-        console.log(url, body);
-        //$(this).prop("disabled", true);
-        $.ajax({
-            url: url,
-            type: 'PATCH',
-            data: body,
-            success: function (response) {
-                if ("error" in response) {
-                    console.log(response['error']);
-                } else {
-                    // launch path of the project is updated
-                    console.log(response['success']);
+        if (data === undefined || data.from_projects_table !== true) {
+            var path_type = $("#url-or-file-selected").text().trim().toLowerCase();
+            var path = $('#filepath').val().trim();
+            var repo_url = $('#repository').val().trim();
+            var body = JSON.stringify({repo_url: repo_url,
+                                       path_type: path_type,
+                                       path: path});
+            var user_name = window.jhdata.user;
+            var url = '/hub/api/projects/'+user_name;
+            console.log(url, body);
+            //$(this).prop("disabled", true);
+            $.ajax({
+                url: url,
+                type: 'PATCH',
+                data: body,
+                success: function (response) {
+                    if ("error" in response) {
+                        console.log(response['error']);
+                    } else {
+                        // launch path of the project is updated
+                        console.log(response['success']);
+                    }
+                    },
+                error: function () {
+                    console.log("Error. Please refresh the page and try again.");
                 }
-                },
-            error: function () {
-                console.log("Error. Please refresh the page and try again.");
-            }
-        });
+            });
+        }
     });
 
     // Project deletion
