@@ -208,15 +208,19 @@ class PersistentBinderSpawner(KubeSpawner):
                 # to be backwards compatible for version <= 0.2.0-n153
                 # covert list, which contains project data, to dict
                 if isinstance(project, list):
-                    _projects.append({
+                    p = {
                         "repo_url": project[0],
                         "image": project[1],
                         "ref": project[2],
                         "display_name": project[3],
                         "last_used": project[4],
-                    })
+                        "path_type": "",
+                        "path": "",
+                    }
                 else:
-                    _projects.append(project)
+                    p = {"path_type": "", "path": ""}
+                    p.update(project)
+                _projects.append(p)
             projects = _projects
             deleted_projects = _state.get('deleted_projects', [])
         else:
@@ -233,17 +237,23 @@ class PersistentBinderSpawner(KubeSpawner):
             # project is started or already running or is stopped,
             # so move project to the end and update the "last used" time
             new_projects = []
+            current_project = {}
             for project in projects:
                 if project["repo_url"] != self.repo_url:
                     new_projects.append(project)
+                else:
+                    # we will insert current project to the end of the list
+                    current_project = project
             from datetime import datetime
-            new_projects.append({
+            # update current_project, so we dont lose launch path data (see ProjectAPIHandler.patch)
+            current_project.update({
                 "repo_url": self.repo_url,
                 "image": self.image,
                 "ref": self.ref,
                 "display_name": self.url_to_display_name(self.repo_url),
                 "last_used": datetime.utcnow().isoformat() + 'Z',
             })
+            new_projects.append(current_project)
             state['projects'] = new_projects
             self.log.info(f"User ({self.user.name}) has just used the project {self.repo_url}.")
 
@@ -284,6 +294,60 @@ class ProjectAPIHandler(APIHandler):
             raise web.HTTPError(404)
         projects = {'projects': user.spawner.get_state_field('projects')}
         self.write(json.dumps(projects))
+
+    @admin_or_self
+    async def patch(self, user_name):
+        """This is only to update path_type and path information of a project."""
+        user = self.find_user(user_name)
+        if user is None:
+            raise web.HTTPError(404)
+        response = {}
+        if user.spawner.active:
+            response["error"] = "Updating a launch path is not allowed while the user server is active."
+        else:
+            body = self.get_json_body()
+            if "repo_url" in body and "path_type" in body and "path" in body and \
+                body["path_type"] in ["url", "file"] and len(body["path"]) <= 512:
+                repo_url = body["repo_url"]
+                path_type = body["path_type"]
+                path = body["path"]
+                projects = user.spawner.get_state_field('projects')
+                deleted_projects = user.spawner.get_state_field('deleted_projects')
+                new_projects = []
+                found = False
+                for project in projects:
+                    if repo_url == project["repo_url"]:
+                        found = True
+                        project.update({
+                            "path_type": path_type,
+                            "path": path,
+                        })
+                    elif "image" not in project:
+                        # only 1 project can be launching at a time
+                        pass
+                    else:
+                        new_projects.append(project)
+                if found is False:
+                    # launching a new project
+                    new_projects.append({
+                        "repo_url": repo_url,
+                        "path_type": path_type,
+                        "path": path,
+                    })
+
+                # NOTE: this way we ensure that this JSONDict field (state) is updated with db.commit()
+                state = user.spawner.get_state()
+                state["projects"] = new_projects
+                # .get_state might empty delete_projects list, so re-insert it
+                state["deleted_projects"] = deleted_projects
+                user.spawner.orm_spawner.state = state
+                self.db.commit()
+                message = f"Project {repo_url} is updated: {path_type} - {path}"
+                self.log.info(f"{user.name}: {message}")
+                response["success"] = message
+            else:
+                response["error"] = "Bad request."
+        self.write(json.dumps(response))
 
     @admin_or_self
     async def delete(self, user_name):

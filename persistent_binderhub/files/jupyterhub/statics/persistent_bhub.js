@@ -42,7 +42,7 @@ require(["jquery", "jhapi", "moment"], function($, JHAPI, moment) {
 
 
 $(document).ready(function() {
-    // Project launch through table
+    // Project launch through the table
     $('.project-launch').click(function(e) {
         // if server is running, this button holds the url of the server
         // if server is not running, do following
@@ -52,6 +52,8 @@ $(document).ready(function() {
             // fill the binder form with values of selected repo and submit
             var ref = $(this).prop('id').replace("launch-","");
             var repo_url = $(this).data('url');
+            var path = $(this).data('path');
+            var path_type = $(this).data('path-type');
             var repo_url_lower = repo_url.toLowerCase();
             var provider_prefix;
             var provider_prefix_selected;
@@ -75,13 +77,56 @@ $(document).ready(function() {
             $('#provider_prefix-selected').text(provider_prefix_selected);
             $('#ref').val(ref);
             $('#repository').val(repo_url);
-            $('#filepath').val('');
-            $('button#submit').trigger('click');
+            $('#filepath').val(path);
+            if (path_type === 'file') {
+                path_type = 'File'
+            } else {
+                path_type = 'URL'
+            }
+            $("#url-or-file-selected").text(path_type);
+            $('button#submit').trigger('click', [{from_projects_table:true}]);
             // hide all launch and delete buttons
             $('.project-launch').addClass('hidden');
             $('.project-delete').addClass('hidden');
             return false;
         }
+    });
+
+    // TODO update launch path data also for loading page
+    $('button#submit').click(function(e, data) {
+        // update launch path only when binder form is used
+        // using binder form means: starting a new project or updating an existing one
+        // using Your Projects table means only using an existing project as last time used
+        if (data.from_projects_table === true) {
+            console.log(data);
+            return false
+        }
+
+        var path_type = $("#url-or-file-selected").text().trim().toLowerCase();
+        var path = $('#filepath').val().trim();
+        var body = JSON.stringify({repo_url: $('#delete-url').val(),
+                                   path_type: path_type,
+                                   path: path});
+        var user_name = window.jhdata.user;
+        var url = '/hub/api/projects/'+user_name;
+        console.log(url, body);
+        //$(this).prop("disabled", true);
+        $.ajax({
+            url: url,
+            type: 'PATCH',
+            data: body,
+            success: function (response) {
+                if ("error" in response) {
+                    console.log(response['error']);
+                } else {
+                    // launch path of the project is updated
+                    console.log(response['success']);
+                }
+                },
+            error: function () {
+                console.log("Error. Please refresh the page and try again.");
+            }
+        });
     });
 
     // Project deletion

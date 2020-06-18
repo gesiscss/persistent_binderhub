@@ -7,6 +7,7 @@
                <tr>
                    <th>Repository</th>
                    <th>Commit</th>
+                   <th>Path</th>
                    <th>Last used</th>
                    <th>Actions</th>
                </tr>
@@ -19,6 +20,7 @@
                       {% set project_not_active = user.spawner._stop_pending or (user.spawner.active and loop.index != loop.length) %}
                       <td class="projects-cell projects-display-name"><a href="{{ project['repo_url'] }}" target="_blank">{{ project['display_name'] }}</a></td>
                       <td class="projects-cell">{{ project['ref'][:16] }}</td>
+                      <td class="projects-cell projects-display-name">{{ project['path_type'] }}:{{ project['path'] }}</td>
                       <td class="projects-cell time-col" id="last-used-{{ project['ref'] }}">{% if project_running %}running{% else %}{{ project['last_used'] }}{% endif %}</td>
                       <td class="projects-cell">
                           {% if project_running %}
@@ -30,7 +32,9 @@
                           <a role="button" id="launch-{{ project['ref'] }}"
                              class="project-launch btn btn-sm {% if project_active %}btn-primary{% else %}btn-warning{% endif %}{% if project_not_active %} hidden{% endif %}"
                              href="{% if project_active %}{{ url }}{% else %}#{% endif %}"
-                             data-url="{{ project['repo_url'] }}">
+                             data-url="{{ project['repo_url'] }}"
+                             data-path-type="{{ project['path_type'] }}"
+                             data-path="{{ project['path'] }}">
                              {% if project_active %}My Server{% else %}Launch{% endif %}
                           </a>
                           <a role="button" id="delete-{{ project['ref'] }}"
