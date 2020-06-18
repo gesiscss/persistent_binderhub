@@ -3,7 +3,7 @@
 1. Follow the [documentation](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube
 and then start it: 
 
-`minikube start`
+`minikube start` or `minikube start --memory 8192` if you want to start Minikube with a 8 GB VM
 
 2. Install and initialize helm:
 
