@@ -57,6 +57,7 @@ git push
 git tag <version>
 git push --tags
 
+# search command returns only stable releases
 helm search persistent_binderhub
 ```
 
