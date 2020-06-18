@@ -9,7 +9,6 @@ import z2jh
 from os.path import join
 from urllib.parse import urlparse
 from tornado import web
-from tornado.escape import json_decode
 from jupyterhub.utils import admin_only
 from jupyterhub.apihandlers.users import admin_or_self
 from jupyterhub.apihandlers.base import APIHandler
@@ -269,6 +268,13 @@ class PersistentBinderSpawner(KubeSpawner):
 
 class ProjectAPIHandler(APIHandler):
     """A JupyterHub API handler to manage user projects."""
+
+    def get_json_body(self):
+        body = super().get_json_body()
+        if body is None:
+            body = {}
+        return body
+
     @admin_only
     async def get(self, user_name):
         """Takes a user name and returns projects of that user."""
@@ -292,7 +298,7 @@ class ProjectAPIHandler(APIHandler):
         if user.spawner.active:
             response["error"] = "Project deletion is not allowed while the user server is active."
         else:
-            body = json_decode(self.request.body)
+            body = self.get_json_body()
             if "repo_url" in body and "name" in body and "id" in body:
                 repo_url = body["repo_url"]
                 projects = user.spawner.get_state_field('projects')
