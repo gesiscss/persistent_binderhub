@@ -289,8 +289,8 @@ class ProjectAPIHandler(APIHandler):
         # delete a project of user
         user = self.find_user(user_name)
         response = {}
-        if user.running:
-            response["error"] = "Project deletion is not allowed while the user server is running."
+        if user.spawner.active:
+            response["error"] = "Project deletion is not allowed while the user server is active."
         else:
             body = json_decode(self.request.body)
             if "repo_url" in body and "name" in body and "id" in body:
