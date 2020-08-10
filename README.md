@@ -1,7 +1,8 @@
 # Persistent BinderHub
 
 This is a Helm chart to install a persistent BinderHub. 
-It simply extends [BinderHub chart](https://github.com/jupyterhub/binderhub) to bring persistent storage feature. 
+It simply configures and extends [BinderHub chart](https://github.com/jupyterhub/binderhub) to bring persistent storage feature, 
+it doesn't define any new component. 
 Therefore before using this chart it is required that you read through [BinderHub documentation](https://binderhub.readthedocs.io/en/latest/), 
 you know how to deploy a [standard BinderHub](http://mybinder.org/) 
 and you are familiar with [enabling authentication](https://binderhub.readthedocs.io/en/latest/authentication.html) in BinderHub.
@@ -50,11 +51,11 @@ binderhub:
 
 ### Authentication
 
-This chart already includes almost all required changes for 
+This chart already includes some of the required changes for 
 [enabling authentication](https://binderhub.readthedocs.io/en/latest/authentication.html#enabling-authentication). 
 But there are pieces that have to be manually configured. In your `config.yaml`:
 
-1. You have to enter the url of your BinderHub into `oauth_redirect_uri`, and set `oauth_client_id`:
+1. You have to set `oauth_client_id`:
 
 ```bash
 binderhub:
@@ -62,7 +63,6 @@ binderhub:
     hub:
       services:
         binder:
-          oauth_redirect_uri: "http://<binderhub_url>/oauth_callback"
           # this is the default value
           oauth_client_id: "binder-oauth-client-test"
 ```
@@ -78,7 +78,14 @@ binderhub:
     auth: {}
 ```
 
+Note that by default the authenticator is [DummyAuthenticator](https://github.com/jupyterhub/dummyauthenticator) 
+and it is recommended to use it only for testing purposes. 
+
 ## Installing the chart
+
+The installation consists of 2 steps. As a first step we install the chart, 
+then we will finalize the configuration of the Binder service 
+and upgrade the chart to apply last changes in the config.
 
 To install the chart with the release name `pbhub` into namespace `pbhub-ns`:
 
@@ -99,6 +106,33 @@ helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.
 # search command returns only stable releases
 helm search persistent_binderhub
 
+```
+
+After the first step, run `kubectl get service proxy-public --namespace=$NAMESPACE` 
+and copy the IP address under `EXTERNAL-IP`, which is the IP address of JupyterHub. 
+Then run `kubectl get service binder --namespace=$NAMESPACE` 
+and again copy the IP address under `EXTERNAL-IP`, which is the IP address of Binder service. 
+
+With the IP addresses you just acquired update your `config.yaml`:
+
+```bash
+binderhub:
+  jupyterhub:
+    hub:
+      services:
+        binder:
+          # where binder runs
+          url: "http://<Binder_IP>"
+          # when url is set, binder can be reached through JupyterHub
+          oauth_redirect_uri: "http://<JupyterHub_IP>/services/binder/oauth_callback"
+```
+
+Finally upgrade the chart to apply this change:
+
+```bash
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n181 \
+             --install --namespace=$NAMESPACE \
+             --debug
 ```
 
 Here you can find the list of charts: https://gesiscss.github.io/persistent_binderhub/
