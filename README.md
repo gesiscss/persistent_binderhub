@@ -83,6 +83,9 @@ and it is recommended to use it only for testing purposes.
 
 ## Installing the chart
 
+First of all you can find the list of charts here: 
+https://gesiscss.github.io/persistent_binderhub/
+
 The installation consists of 2 steps. As a first step we install the chart, 
 then we will finalize the configuration of the Binder service 
 and upgrade the chart to apply last changes in the config.
@@ -109,9 +112,9 @@ helm search persistent_binderhub
 ```
 
 After the first step, run `kubectl get service proxy-public --namespace=$NAMESPACE` 
-and copy the IP address under `EXTERNAL-IP`, which is the IP address of JupyterHub. 
+and copy the IP address under `EXTERNAL-IP`, which is the IP of the JupyterHub. 
 Then run `kubectl get service binder --namespace=$NAMESPACE` 
-and again copy the IP address under `EXTERNAL-IP`, which is the IP address of Binder service. 
+and again copy the IP address under `EXTERNAL-IP`, which is the IP of the Binder service. 
 
 With the IP addresses you just acquired update your `config.yaml`:
 
@@ -135,7 +138,11 @@ helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.
              --debug
 ```
 
-Here you can find the list of charts: https://gesiscss.github.io/persistent_binderhub/
+When the installation is done, 
+the persistent BinderHub will be available at "http://<JupyterHub_IP>", 
+and there (at JupyterHub home page) you will see a customized BinderHub UI for persistence, 
+which is the place that users will interact with the system mostly.  
+The standard BinderHub will be available at "http://<JupyterHub_IP>/services/binder" as a service of JupyterHub. 
 
 ## Uninstalling the chart
 
