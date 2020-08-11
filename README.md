@@ -1,7 +1,7 @@
 # Persistent BinderHub
 
 This is a Helm chart to install a persistent BinderHub. 
-It simply configures and extends [BinderHub chart](https://github.com/jupyterhub/binderhub) to bring persistent storage feature, 
+It simply configures and extends [BinderHub chart](https://github.com/jupyterhub/binderhub) to add persistent storage, 
 it doesn't define any new component. 
 Therefore before using this chart it is required that you read through [BinderHub documentation](https://binderhub.readthedocs.io/en/latest/), 
 you know how to deploy a [standard BinderHub](http://mybinder.org/) 
@@ -88,7 +88,7 @@ https://gesiscss.github.io/persistent_binderhub/
 
 The installation consists of 2 steps. As a first step we install the chart, 
 then we will finalize the configuration of the Binder service 
-and upgrade the chart to apply last changes in the config.
+and upgrade the chart to apply final changes in the config.
 
 To install the chart with the release name `pbhub` into namespace `pbhub-ns`:
 
