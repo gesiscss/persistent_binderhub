@@ -5,6 +5,14 @@ and then start it:
 
 `minikube start` or `minikube start --memory 8192` if you want to start Minikube with a 8 GB VM
 
+To point your shell to minikube's docker-daemon, run: 
+
+`eval $(minikube -p minikube docker-env)`
+
+This means images you build are directly available to the cluster. And to undo it run: 
+
+`eval $(minikube docker-env -u)`
+
 2. Install and initialize helm:
 
 2.1. Helm 2 [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:
@@ -23,17 +31,10 @@ helm version
 
 ```
 
-Before starting your local deployment run:
+3. Run `minikube ip` to get the IP of the running cluster and 
+in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of the cluster.
 
-`eval $(minikube docker-env)`
-
-This command sets up docker to use the same Docker daemon as your minikube cluster does. 
-This means images you build are directly available to the cluster. 
-Note: when you no longer wish to use the minikube host, you can undo this change by running:
-
-`eval $(minikube docker-env -u)`
-
-3. Deploy persistent BinderHub:
+4. Deploy persistent BinderHub:
 
 ```bash
 git clone https://github.com/gesiscss/persistent_binderhub.git
@@ -51,32 +52,16 @@ helm upgrade pbhub-dev persistent_binderhub/. \
 
 ```
 
-4. Get the kubernetes URL for the `proxy-public` service:
-
-`minikube service proxy-public --namespace=pbhub-dev-ns --url=true`
-
-5. in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of `proxy-public` service, 
-which you acquired in the previous step 
-and run helm installation command again:
-
-```bash
-helm upgrade pbhub-dev persistent_binderhub/. \
-             --install --namespace=pbhub-dev-ns \
-             -f local/minikube/config.yaml \
-             --debug
-
-```
-
-6. Finally run this command to reach the application in browser:
-
-`minikube service proxy-public --namespace=pbhub-dev-ns`
-
 It takes couple of minutes until all pods get ready, because required docker images must be downloaded into the minikube cluster. 
 Meanwhile you can run the following command to observe the pods until they have status `Running`:
 
 `kubectl get pod --namespace=pbhub-dev-ns --watch`
 
 You can exit watching by `CTRL+C`.
+
+5. Finally run this command to reach the application in browser:
+
+`minikube service proxy-public --namespace=pbhub-dev-ns`
 
 ## Tearing everything down
 
@@ -119,6 +104,9 @@ minikube mount path/to/dir:/mount/path
 https://minikube.sigs.k8s.io/docs/reference/persistent_volumes/
 
 ```bash
+# returns the default storage class
+kubectl get storageclass
+
 # ssh to minikube instance
 minikube ssh
 # inside minikube, list PVs
