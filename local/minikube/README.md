@@ -31,14 +31,19 @@ helm version
 
 ```
 
-3. Run `minikube ip` to get the IP of the running cluster and 
-in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of the cluster.
-
-4. Deploy persistent BinderHub:
+3. Clone the repo and cd into it:
 
 ```bash
 git clone https://github.com/gesiscss/persistent_binderhub.git
 cd persistent_binderhub
+```
+
+4. Run `minikube ip` to get the IP of the running cluster and 
+in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of the cluster.
+
+5. Deploy persistent BinderHub:
+
+```bash
 # fetch the required charts (BinderHub and JupyterHub charts) into charts folder
 helm dependency update persistent_binderhub
 # test local config
@@ -59,7 +64,7 @@ Meanwhile you can run the following command to observe the pods until they have 
 
 You can exit watching by `CTRL+C`.
 
-5. Finally run this command to reach the application in browser:
+6. Finally run this command to reach the application in browser:
 
 `minikube service proxy-public --namespace=pbhub-dev-ns`
 
