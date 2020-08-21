@@ -9,6 +9,10 @@ or if you want to start it with a 8 GB and 4 CPUs
 
 `minikube start --kubernetes-version v1.18.3 --driver <driver_name> --cpus 4 --memory 8192` 
 
+and when the local cluster is ready, you can check the status with
+
+`minikube status`
+
 2. Install and initialize helm:
 
 2.1. Helm 2 [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:
@@ -35,7 +39,7 @@ cd persistent_binderhub
 ```
 
 4. Run `minikube ip` to get the IP of the running cluster and 
-in `local/minikube/config.yaml` replace all occurrences of `127.0.0.1` with the IP of the cluster.
+in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.0.1`) with the IP of the cluster.
 
 5. Deploy persistent BinderHub:
 
@@ -61,9 +65,9 @@ Meanwhile you can run the following command to observe the pods until they have 
 
 You can exit watching by `CTRL+C`.
 
-6. Finally run this command to reach your persistent BinderHub instance in browser:
+6. Finally run this command to get the url of your persistent BinderHub instance:
 
-`minikube service proxy-public --namespace=pbhub-dev-ns`
+`minikube service proxy-public --namespace=pbhub-dev-ns --url=true`
 
 ## Tearing everything down
 
