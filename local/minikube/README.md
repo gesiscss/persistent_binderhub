@@ -1,17 +1,13 @@
 # Run Persistent BinderHub in minikube
 
 1. Follow the [documentation](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube
-and then start it: 
+and then start your local cluster with
 
-`minikube start` or `minikube start --memory 8192` if you want to start Minikube with a 8 GB VM
+`minikube start --kubernetes-version v1.18.3 --driver <driver_name>` 
 
-To point your shell to minikube's docker-daemon, run: 
+or if you want to start it with a 8 GB and 4 CPUs
 
-`eval $(minikube -p minikube docker-env)`
-
-This means images you build are directly available to the cluster. And to undo it run: 
-
-`eval $(minikube docker-env -u)`
+`minikube start --kubernetes-version v1.18.3 --driver <driver_name> --cpus 4 --memory 8192` 
 
 2. Install and initialize helm:
 
@@ -57,14 +53,15 @@ helm upgrade pbhub-dev persistent_binderhub/. \
 
 ```
 
-It takes couple of minutes until all pods get ready, because required docker images must be downloaded into the minikube cluster. 
+It takes couple of minutes until all pods get ready, 
+because required docker images must be downloaded into the local minikube cluster. 
 Meanwhile you can run the following command to observe the pods until they have status `Running`:
 
 `kubectl get pod --namespace=pbhub-dev-ns --watch`
 
 You can exit watching by `CTRL+C`.
 
-6. Finally run this command to reach the application in browser:
+6. Finally run this command to reach your persistent BinderHub instance in browser:
 
 `minikube service proxy-public --namespace=pbhub-dev-ns`
 
@@ -81,18 +78,24 @@ kubectl delete namespace pbhub-dev-ns
 
 # to stop minikube
 minikube stop
-# if you get error "error: You must be logged in to the server (Unauthorized)", 
-# you can delete and re-start minikube cluster
+# to delete the local minikube cluster
 minikube delete
 ```
 
 ## Useful minikube commands
 
 ```bash
+# to check status
+minikube status
 # to access to the kubernetes dashboard in minikube cluster
 minikube dashboard
 # to get ip of minikube cluster
 minikube ip
+
+# to configure your shell/environment to use minikube’s Docker daemon
+eval $(minikube -p minikube docker-env)
+# and to undo it
+eval $(minikube docker-env -u)
 
 # to get get URL of binder service
 minikube service binder --url=true --namespace=pbhub-dev-ns
