@@ -2,6 +2,26 @@ apiVersion: v1
 entries:
   persistent_binderhub:
   - apiVersion: v1
+    created: "2020-09-08T11:18:21.843210085+02:00"
+    dependencies:
+    - name: binderhub
+      repository: https://jupyterhub.github.io/helm-chart
+      version: 0.2.0-n217.h35366ea
+    description: A Helm chart for persistent BinderHub deployment
+    digest: 3148c2f76d407815d934e51aa6e26ff92a8ab062f9080b2e45a461ff18d25dee
+    home: https://github.com/gesiscss/persistent_binderhub
+    keywords:
+    - binderhub
+    - persistent
+    - storage
+    maintainers:
+    - email: kenan.erdogan@gesis.org
+      name: Kenan Erdogan
+    name: persistent_binderhub
+    urls:
+    - https://gesiscss.github.io/persistent_binderhub/persistent_binderhub-0.2.0-n217.tgz
+    version: 0.2.0-n217
+  - apiVersion: v1
     created: "2020-06-18T16:27:00.740383771+02:00"
     dependencies:
     - name: binderhub
@@ -61,4 +81,4 @@ entries:
     urls:
     - https://gesiscss.github.io/persistent_binderhub/persistent_binderhub-0.2.0-n134.tgz
     version: 0.2.0-n134
-generated: "2020-04-27T10:42:07.927448956+02:00"
+generated: "2020-04-15T17:57:33.781080391+02:00"
