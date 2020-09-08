@@ -104,6 +104,7 @@ binderhub:
         - "/etc/jupyterhub/templates"
       templateVars:
         persistency_explanation: "Have a Binder-Ready repository? With Persistent BinderHub, turn this repository into a persistent Jupyter environment, allowing you to continue your analysis from anywhere at any time."
+      #shutdownOnLogout: true
       #authenticatePrometheus: false
       redirectToServer: false
       services:

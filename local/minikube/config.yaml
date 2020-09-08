@@ -27,8 +27,6 @@ binderhub:
       enabled: true
     hub:
       cookieSecret: "29195074ffd6cae79ed3dcb7483f65c098275b172a4757cc998c00dcc63ff173"
-      authenticatePrometheus: false
-      shutdownOnLogout: true
       services:
         binder:
           url: http://127.0.0.1:30124
@@ -55,6 +53,7 @@ binderhub:
             cpu: 0
 
     auth:
+      # by default the authenticator is DummyAuthenticator
       admin:
         users:
           - admin
