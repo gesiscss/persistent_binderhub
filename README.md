@@ -103,7 +103,8 @@ helm repo update
 RELEASENAME=pbhub
 NAMESPACE=pbhub-ns
 kubectl create namespace $NAMESPACE
-helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n217 \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
+             --version=0.2.0-n217 \
              --install --namespace=$NAMESPACE \
              --debug
 
@@ -113,9 +114,9 @@ helm search persistent_binderhub
 ```
 
 After the first step, run `kubectl get service proxy-public --namespace=$NAMESPACE` 
-and copy the IP address under `EXTERNAL-IP`, which is the IP of the JupyterHub. 
+and note down the IP address under `EXTERNAL-IP`, which is the IP of the JupyterHub. 
 Then run `kubectl get service binder --namespace=$NAMESPACE` 
-and again copy the IP address under `EXTERNAL-IP`, which is the IP of the Binder service. 
+and again note down the IP address under `EXTERNAL-IP`, which is the IP of the Binder service. 
 
 With the IP addresses you just acquired update your `config.yaml`:
 
@@ -134,7 +135,8 @@ binderhub:
 Finally upgrade the chart to apply this change:
 
 ```bash
-helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n217 \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
+             --version=0.2.0-n217 \
              --install --namespace=$NAMESPACE \
              --debug
 ```
