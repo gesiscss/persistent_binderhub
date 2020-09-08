@@ -154,6 +154,13 @@ class PersistentBinderSpawner(KubeSpawner):
         command = ["/bin/sh", "-c", " && ".join(init_container_cmds)]
         self.log.debug(f"Following command will be executed for user ({self.user.name}): {command}")
         projects_volume_mount = {'name': self.volumes[0]['name'], 'mountPath': mount_path}
+        # NOTE: if binder "start" config is defined
+        #  (https://mybinder.readthedocs.io/en/latest/config_files.html#start-run-code-before-the-user-sessions-starts)
+        #  and if start command changes the content,
+        #  initcontainer misses that change.
+        #  because start command is run as an ENTRYPOINT and initcontainer's command overwrites it
+        #  But start command will be executed in notebook container (because we dont define a custom command for it),
+        #  so change will take place there, and on user's side, there is no problem
         self.init_containers = [{
             "name": "project-manager",
             "image": self.image,
