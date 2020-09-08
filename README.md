@@ -11,6 +11,7 @@ and you are familiar with [enabling authentication](https://binderhub.readthedoc
    * [User storage](#user-storage)
    * [Authentication](#authentication)
 * [Installing the chart](#installing-the-chart)
+   * [Known issues](#known-issues)
 * [Uninstalling the chart](#uninstalling-the-chart)
 * [Customization](#customization)
    * [BinderHub customization](#binderhub-customization)
@@ -142,7 +143,18 @@ When the installation is done,
 the persistent BinderHub will be available at "http://<JupyterHub_IP>", 
 and there (at JupyterHub home page) you will see a customized BinderHub UI for persistence, 
 which is the place that users will interact with the system mostly.  
-The standard BinderHub will be available at "http://<JupyterHub_IP>/services/binder" as a service of JupyterHub. 
+The standard BinderHub will be available at "http://<JupyterHub_IP>/services/binder" as a service of JupyterHub.
+
+### Known issues
+
+1. If you don't know the url of the JupyterHub (`binderhub.config.BinderHub.hub_url`) 
+and it is not set during the first step of the installation, 
+you will get an error similar to 
+`Error: render error in "persistent_binderhub/charts/binderhub/templates/deployment.yaml": template: persistent_binderhub/charts/binderhub/templates/deployment.yaml:98:74: executing "persistent_binderhub/charts/binderhub/templates/deployment.yaml" at <"/">: invalid value; expected string`  
+To fix it, you can use a dummy url for the `hub_url`, e.g. "http://127.0.0.1",  
+and after the first step when you have the correct url of the hub, you can replace it.  
+GitHub issue: https://github.com/gesiscss/persistent_binderhub/issues/5  
+Potential fix: https://github.com/jupyterhub/binderhub/pull/1139
 
 ## Uninstalling the chart
 
