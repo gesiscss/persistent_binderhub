@@ -102,7 +102,7 @@ helm repo update
 RELEASENAME=pbhub
 NAMESPACE=pbhub-ns
 kubectl create namespace $NAMESPACE
-helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n181 \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n217 \
              --install --namespace=$NAMESPACE \
              --debug
 
@@ -133,7 +133,7 @@ binderhub:
 Finally upgrade the chart to apply this change:
 
 ```bash
-helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n181 \
+helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub --version=0.2.0-n217 \
              --install --namespace=$NAMESPACE \
              --debug
 ```
