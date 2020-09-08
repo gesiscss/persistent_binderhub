@@ -153,7 +153,7 @@ The standard BinderHub will be available at "http://<JupyterHub_IP>/services/bin
 and it is not set during the first step of the installation, 
 you will get an error similar to 
 `Error: render error in "persistent_binderhub/charts/binderhub/templates/deployment.yaml": template: persistent_binderhub/charts/binderhub/templates/deployment.yaml:98:74: executing "persistent_binderhub/charts/binderhub/templates/deployment.yaml" at <"/">: invalid value; expected string`  
-To fix it, you can use a dummy url for the `hub_url`, e.g. "http://127.0.0.1",  
+To fix it, you can use a dummy value for the `hub_url`, e.g. "http://127.0.0.1",  
 and after the first step when you have the correct url of the hub, you can replace it.  
 GitHub issue: https://github.com/gesiscss/persistent_binderhub/issues/5  
 Potential fix: https://github.com/jupyterhub/binderhub/pull/1139
