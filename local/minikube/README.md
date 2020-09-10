@@ -10,17 +10,17 @@ and when the local cluster is ready, you can check the status with
 
 2. Install and initialize helm:  
     2.1. Helm 2 [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:  
-        ```bash
-        curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
-        helm init
-        # run this command until tiller is ready
-        helm version
-        ```  
+    ```bash
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+    helm init
+    # run this command until tiller is ready
+    helm version
+    ```  
     2.2. Helm 3 [[2](https://helm.sh/docs/intro/install/#from-script)]:  
-        ```bash
-        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-        helm version
-        ```
+    ```bash
+    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    helm version
+    ```
 
 3. Clone the repo and cd into it:  
     ```bash
