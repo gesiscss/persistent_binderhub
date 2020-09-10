@@ -59,8 +59,15 @@ git push
 git tag <version>
 git push --tags
 
-# search command returns only stable releases
+# helm 2
+# search command returns only stable releases, the latest stable versions
 helm search persistent_binderhub
+# use --devel flag, if you want to get also pre-release versions
+helm search persistent_binderhub --devel
+# helm 3
+helm search repo persistent_binderhub
+helm search repo persistent_binderhub --devel
+
 ```
 
 - https://helm.sh/docs/topics/chart_repository/

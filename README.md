@@ -33,7 +33,7 @@ Before the installation there are configurations required to be done for `User s
 
 To be able to offer a persistent storage to users, in your kubernetes cluster you need to have a 
 [storage class](https://kubernetes.io/docs/concepts/storage/storage-classes/) defined, 
-which dynamically provisions them. Please follow the 
+which dynamically provisions persistent volumes. Please follow the 
 [user storage documentation](https://zero-to-jupyterhub.readthedocs.io/en/latest/customizing/user-storage.html) 
 of [JupyterHub chart](https://zero-to-jupyterhub.readthedocs.io/) for more information. 
 
@@ -94,7 +94,7 @@ and upgrade the chart to apply final changes in the config.
 To install the chart with the release name `pbhub` into namespace `pbhub-ns`:
 
 ```bash
-# Add the persistent_binderhub helm chart repo
+# add the persistent_binderhub helm chart repo
 helm repo add persistent_binderhub https://gesiscss.github.io/persistent_binderhub/
 # update charts
 helm repo update
@@ -107,10 +107,6 @@ helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
              --version=0.2.0-n217 \
              --install --namespace=$NAMESPACE \
              --debug
-
-# search command returns only stable releases
-helm search persistent_binderhub
-
 ```
 
 After the first step, run `kubectl get service proxy-public --namespace=$NAMESPACE` 
@@ -144,7 +140,7 @@ helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
 When the installation is done, 
 the persistent BinderHub will be available at "http://<JupyterHub_IP>", 
 and there (at JupyterHub home page) you will see a customized BinderHub UI for persistence, 
-which is the place that users will interact with the system mostly.  
+which is the place that users will interact with the system mostly. 
 The standard BinderHub will be available at "http://<JupyterHub_IP>/services/binder" as a service of JupyterHub.
 
 ### Known issues
