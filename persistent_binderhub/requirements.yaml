@@ -1,5 +1,5 @@
 dependencies:
  - name: binderhub
    # NOTE: when binderhub version is upgraded, upgrade chart version too (Chart.yaml)
-   version: 0.2.0-n217.h35366ea
+   version: 0.2.0-n219.hbc17443
    repository: https://jupyterhub.github.io/helm-chart

@@ -4,7 +4,7 @@
 
 Here you can find the releases of BinderHub chart: https://jupyterhub.github.io/helm-chart/#development-releases-binderhub
 
-1. http://github.com/jupyterhub/binderhub/compare/35366ea...X
+1. http://github.com/jupyterhub/binderhub/compare/bc17443...X
 2. If there is a z2jh upgrade: https://github.com/jupyterhub/zero-to-jupyterhub-k8s/compare/X...Y
 3. If there is a JupyterHub upgrade:
  - https://github.com/jupyterhub/jupyterhub/compare/X...Y
