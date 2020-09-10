@@ -5,7 +5,7 @@ and then start your local cluster with
 `minikube start --kubernetes-version v1.18.3 --driver <driver_name>`  
 or if you want to start it with a 8 GB and 4 CPUs  
 `minikube start --kubernetes-version v1.18.3 --driver <driver_name> --cpus 4 --memory 8192`  
-and when the local cluster is ready, you can check the status with  
+and when the local cluster is ready, you can check the status with 
 `minikube status`
 
 2. Install and initialize helm:  
@@ -48,7 +48,7 @@ in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.
     because required docker images must be downloaded into the local minikube cluster. 
     Meanwhile you can run the following command to observe the pods until they have status `Running`:  
     `kubectl get pod --namespace=pbhub-dev-ns --watch`  
-    You can exit watching by `CTRL+C`.
+    You can exit watching pods by `CTRL+C`.
 
 6. Finally run this command to get the url of your persistent BinderHub instance:  
 `minikube service proxy-public --namespace=pbhub-dev-ns --url=true`
