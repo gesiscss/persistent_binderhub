@@ -213,7 +213,7 @@ class PersistentBinderSpawner(KubeSpawner):
             _projects = []
             for project in projects:
                 # to be backwards compatible for version <= 0.2.0-n153
-                # covert list, which contains project data, to dict
+                # convert list, which contains project data, to dict
                 if isinstance(project, list):
                     _projects.append({
                         "repo_url": project[0],
