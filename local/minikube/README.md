@@ -2,8 +2,8 @@
 
 1. Follow the [documentation](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube
 and then start your local cluster with  
-`minikube start --kubernetes-version v1.18.3 --driver <driver_name>`  
-or if you want to start it with a 8 GB and 4 CPUs  
+`minikube start --driver <driver_name>`  
+or if you want to start it with a specific kubernetes version and with 4 CPUs and 8 GB  
 `minikube start --kubernetes-version v1.18.3 --driver <driver_name> --cpus 4 --memory 8192`  
 and when the local cluster is ready, you can check the status with 
 `minikube status`
