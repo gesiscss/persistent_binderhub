@@ -90,6 +90,10 @@ minikube service binder --url=true --namespace=pbhub-dev-ns
 # to list the URLs for all services
 minikube service list --namespace=pbhub-dev-ns
 
+# to list supported addons
+# NOTE: default storage class and provider addons are enabled by default
+minikube addons list
+
 # to mount a local directory to minikube instance
 # https://minikube.sigs.k8s.io/docs/tasks/mount/
 minikube mount path/to/dir:/mount/path
