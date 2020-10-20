@@ -40,7 +40,7 @@ in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.
 
     # install it in minikube cluster
     kubectl create namespace pbhub-dev-ns
-    helm upgrade pbhub-dev persistent_binderhub/. \
+    helm upgrade pbhub-dev persistent_binderhub/persistent_binderhub \
                  --install --namespace=pbhub-dev-ns \
                  -f local/minikube/config.yaml \
                  --debug
