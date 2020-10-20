@@ -33,18 +33,19 @@ in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.
 
 5. Deploy persistent BinderHub:  
     ```bash
-    # add the persistent_binderhub helm chart repo
-    helm repo add persistent_binderhub https://gesiscss.github.io/persistent_binderhub/
-    # update charts
-    helm repo update
-
+    # fetch the required charts (BinderHub and JupyterHub charts) into charts folder
+    helm dependency update persistent_binderhub
+    # test local config
+    helm template persistent_binderhub -f local/minikube/config.yaml
     # install it in minikube cluster
     kubectl create namespace pbhub-dev-ns
-    helm upgrade pbhub-dev persistent_binderhub/persistent_binderhub \
+    helm upgrade pbhub-dev persistent_binderhub/. \
                  --install --namespace=pbhub-dev-ns \
                  -f local/minikube/config.yaml \
                  --debug
-    ```  
+    ```
+    Make sure you are in the `/path_to_folder/persistent_binderhub/` directory while running these commands.
+    
     It takes couple of minutes until all pods get ready, 
     because required docker images must be downloaded into the local minikube cluster. 
     Meanwhile you can run the following command to observe the pods until they have status `Running`:  
