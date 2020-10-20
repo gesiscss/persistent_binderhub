@@ -33,10 +33,11 @@ in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.
 
 5. Deploy persistent BinderHub:  
     ```bash
-    # fetch the required charts (BinderHub and JupyterHub charts) into charts folder
-    helm dependency update persistent_binderhub
-    # test local config
-    helm template persistent_binderhub -f local/minikube/config.yaml
+    # add the persistent_binderhub helm chart repo
+    helm repo add persistent_binderhub https://gesiscss.github.io/persistent_binderhub/
+    # update charts
+    helm repo update
+
     # install it in minikube cluster
     kubectl create namespace pbhub-dev-ns
     helm upgrade pbhub-dev persistent_binderhub/. \
