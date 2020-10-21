@@ -4,26 +4,26 @@
 
 Here you can find the releases of BinderHub chart: https://jupyterhub.github.io/helm-chart/#development-releases-binderhub
 
-1. http://github.com/jupyterhub/binderhub/compare/bc17443...X
-2. If there is a z2jh upgrade: https://github.com/jupyterhub/zero-to-jupyterhub-k8s/compare/X...Y
-3. If there is a JupyterHub upgrade:
- - https://github.com/jupyterhub/jupyterhub/compare/X...Y
- - Update base image tag with new version of JupyterHub in `.binder/Dockerfile`
- - Then update image tag of "gesiscss/binder-gesiscss-2dpersistent-5fbinderhub-ab107f" 
-   in `persistent_binderhub/files/jupyterhub/persistent_bhub_config.py`
-4. Update following files according to changes in comparison urls:
+1. http://github.com/jupyterhub/binderhub/compare/87e78af...X
+2. If there is a z2jh(JupyterHub chart upgrade in binderhub chart requirements.yaml) upgrade: https://github.com/jupyterhub/zero-to-jupyterhub-k8s/compare/X...Y
+   - If there is a JupyterHub upgrade:
+      - https://github.com/jupyterhub/jupyterhub/compare/X...Y
+      - Update base image tag with new version of JupyterHub in `.binder/Dockerfile`
+      - Then update image tag of "gesiscss/binder-gesiscss-2dpersistent-5fbinderhub-ab107f"
+        in `persistent_binderhub/files/jupyterhub/persistent_bhub_config.py`
+3. Update following files according to changes in comparison urls:
  - `persistent_binderhub/values.yaml`
  - `persistent_binderhub/files/jupyterhub/persistent_bhub_config.py`
  - `persistent_binderhub/files/jupyterhub/templates/home.html`
  - `README.md`s, `local` folder etc
-5. Upgrade BinderHub chart version in `persistent_binderhub/requirements.yaml`
-6. Upgrade chart version in `persistent_binderhub/Chart.yaml`, you should only update the `-nxyz` part, 
+4. Upgrade BinderHub chart version in `persistent_binderhub/requirements.yaml`
+5. Upgrade chart version in `persistent_binderhub/Chart.yaml`, you should only update the `-nxyz` part,
    it must be same as in version of BinderHub chart
 
 ### If updating/fixing files of this chart
 
 1. Do your changes
-2. Upgrade chart version in `persistent_binderhub/Chart.yaml`, you should only add .n at the end, e.g. 0.2.0-n153.1 or 0.2.0-n153.2. 
+2. Upgrade chart version in `persistent_binderhub/Chart.yaml`, you should only add .n at the end, e.g. 0.2.0-n153.1 or 0.2.0-n153.2.
    The `-nxyz` part must stay same as in version of BinderHub chart
 
 ## How to add a new chart into chart repo

@@ -4,7 +4,7 @@ description: A Helm chart for persistent BinderHub deployment
 # Note: update version in sync with binderhub version
 # when we change this chart without upgrading the binderhub,
 # then just add .n at the end, e.g. 0.2.0-n153.1 or 0.2.0-n153.2
-version: 0.2.0-n219
+version: 0.2.0-n242
 keywords:
   - binderhub
   - persistent
@@ -13,4 +13,6 @@ home: https://github.com/gesiscss/persistent_binderhub
 maintainers:
   - name: Kenan Erdogan
     email: kenan.erdogan@gesis.org
+  - name: Mridul Seth
+    email: mridul.seth@gesis.org
 #icon: A URL to an SVG or PNG image to be used as an icon (optional).
