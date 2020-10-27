@@ -106,7 +106,8 @@ kubectl create namespace $NAMESPACE
 helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
              --version=0.2.0-n242 \
              --install --namespace=$NAMESPACE \
-             --debug
+             --debug \
+             -f config.yaml
 ```
 
 After the first step, run `kubectl get service proxy-public --namespace=$NAMESPACE` 
@@ -134,7 +135,8 @@ Finally upgrade the chart to apply this change:
 helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
              --version=0.2.0-n242 \
              --install --namespace=$NAMESPACE \
-             --debug
+             --debug \
+             -f config.yaml
 ```
 
 When the installation is done, 
