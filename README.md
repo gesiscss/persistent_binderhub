@@ -104,7 +104,7 @@ RELEASENAME=pbhub
 NAMESPACE=pbhub-ns
 kubectl create namespace $NAMESPACE
 helm upgrade $RELEASENAME persistent_binderhub/persistent_binderhub \
-             --version=0.2.0-n465 \
+             --version=0.2.0-n465.1 \
              --install --namespace=$NAMESPACE \
              --debug \
              -f config.yaml
