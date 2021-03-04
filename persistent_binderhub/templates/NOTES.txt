@@ -18,6 +18,6 @@ Note that this is still an alpha release! If you have questions, feel free to
   1. Read the documentation at https://github.com/gesiscss/persistent_binderhub
   2. File issues at https://github.com/gesiscss/persistent_binderhub/issues
 
-{{ if eq .Values.binderhub.jupyterhub.auth.type "dummy" }}
+{{ if eq .Values.binderhub.jupyterhub.hub.config.JupyterHub.authenticator_class "dummy" }}
 WARNING: You are using the DummyAuthenticator, don't use it in production environments.
 {{ end }}
