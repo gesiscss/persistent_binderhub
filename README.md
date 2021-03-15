@@ -75,8 +75,10 @@ For more information you can check the
 ```bash
 binderhub:
   jupyterhub:
-    # add the config of your authenticator here
-    auth: {}
+    hub:
+      config:
+        JupyterHub:
+          authenticator_class: dummy
 ```
 
 Note that by default the authenticator is [DummyAuthenticator](https://github.com/jupyterhub/dummyauthenticator) 
