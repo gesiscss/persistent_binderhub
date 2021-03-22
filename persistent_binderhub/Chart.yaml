@@ -4,7 +4,7 @@ description: A Helm chart for persistent BinderHub deployment
 # Note: update version in sync with binderhub version
 # when we change this chart without upgrading the binderhub,
 # then just add .n at the end, e.g. 0.2.0-n153.1 or 0.2.0-n153.2
-version: 0.2.0-n528
+version: 0.2.0-n528.1
 keywords:
   - binderhub
   - persistent
