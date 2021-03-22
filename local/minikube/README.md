@@ -12,16 +12,16 @@ and when the local cluster is ready, you can check the status with
 `minikube status`.
 
 2. Install and initialize helm:  
-```bash
-curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-helm version
-```
+    ```bash
+    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    helm version
+    ```
 
 3. Clone the repo and cd into it:  
 ```bash
 git clone https://github.com/gesiscss/persistent_binderhub.git
 cd persistent_binderhub
-    ```
+ ```
 
 4. Run `minikube ip` to get the IP of the running cluster and 
 in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.0.1`) with the IP of the cluster.
