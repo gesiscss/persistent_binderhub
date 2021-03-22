@@ -7,7 +7,7 @@ binderhub:
   config:
     BinderHub:
       debug: true
-      hub_url: http://127.0.0.1:30123
+      hub_url: http://127.0.0.1:31123
       # use only local docker images
       use_registry: false
 
@@ -17,7 +17,7 @@ binderhub:
 
   service:
     type: NodePort
-    nodePort: 30124
+    nodePort: 31124
 
   imageCleaner:
     enabled: false
@@ -29,14 +29,17 @@ binderhub:
       cookieSecret: "29195074ffd6cae79ed3dcb7483f65c098275b172a4757cc998c00dcc63ff173"
       services:
         binder:
-          url: http://127.0.0.1:30124
-          oauth_redirect_uri: "http://127.0.0.1:30123/services/binder/oauth_callback"
+          url: http://127.0.0.1:31124
+          oauth_redirect_uri: "http://127.0.0.1:31123/services/binder/oauth_callback"
           oauth_client_id: "binder-oauth-client-dev"
           apiToken: "6e5252a4ef9f19554cfffd970270e144e4dcca1520b9c6bb6c6f412743cbea7a"
       resources:
         requests:
           cpu: 0
           memory: 0
+      config:
+        Authenticator:
+          admin_users: ['admin']
 
     proxy:
       secretToken: "790fd9f44ea71a380294cb1d3b483cef1b3d4cb0fe9335132c56661e85b6ab69"
@@ -45,20 +48,15 @@ binderhub:
       service:
         type: NodePort
         nodePorts:
-          http: 30123
+          http: 31123
       chp:
         resources:
           requests:
             memory: 0
             cpu: 0
 
-    auth:
-      # by default the authenticator is DummyAuthenticator
-      admin:
-        users:
-          - admin
-
     singleuser:
+      defaultUrl: "/lab"
       cpu:
         guarantee: 0
       memory:

@@ -1,4 +1,7 @@
-# Run Persistent BinderHub in minikube
+# Deploying Persistent BinderHub on minikube
+
+If you would like to contribute to Persistent BinderHub you can set up a local
+deployment of Persistent BinderHub using minikube.
 
 1. Follow the [documentation](https://kubernetes.io/docs/tasks/tools/install-minikube/) to install minikube
 and then start your local cluster with  
@@ -6,26 +9,18 @@ and then start your local cluster with
 or if you want to start it with a specific kubernetes version and with 4 CPUs and 8 GB  
 `minikube start --kubernetes-version v1.18.3 --driver <driver_name> --cpus 4 --memory 8192`  
 and when the local cluster is ready, you can check the status with 
-`minikube status`
+`minikube status`.
 
 2. Install and initialize helm:  
-    2.1. Helm 2 [[1](https://github.com/jupyterhub/binderhub/blob/master/CONTRIBUTING.md#one-time-installation)]:  
-    ```bash
-    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
-    helm init
-    # run this command until tiller is ready
-    helm version
-    ```  
-    2.2. Helm 3 [[2](https://helm.sh/docs/intro/install/#from-script)]:  
-    ```bash
-    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-    helm version
-    ```
+```bash
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+helm version
+```
 
 3. Clone the repo and cd into it:  
-    ```bash
-    git clone https://github.com/gesiscss/persistent_binderhub.git
-    cd persistent_binderhub
+```bash
+git clone https://github.com/gesiscss/persistent_binderhub.git
+cd persistent_binderhub
     ```
 
 4. Run `minikube ip` to get the IP of the running cluster and 
@@ -59,8 +54,6 @@ in `local/minikube/config.yaml` replace all occurrences of the dummy IP (`127.0.
 
 ```bash
 # to delete the Helm release
-# if using helm 2
-helm delete pbhub-dev --purge
 # if using helm 3
 helm delete pbhub-dev --namespace=pbhub-dev-ns
 # to delete the Kubernetes namespace
