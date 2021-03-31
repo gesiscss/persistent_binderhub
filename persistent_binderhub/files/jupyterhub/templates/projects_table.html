@@ -30,7 +30,9 @@
                           <a role="button" id="launch-{{ project['ref'] }}"
                              class="project-launch btn btn-sm {% if project_active %}btn-primary{% else %}btn-warning{% endif %}{% if project_not_active %} hidden{% endif %}"
                              href="{% if project_active %}{{ url }}{% else %}#{% endif %}"
-                             data-url="{{ project['repo_url'] }}">
+                             data-url="{{ project['repo_url'] }}"
+                             data-provider_prefix="{{ project['provider_prefix'] }}"
+                             data-provider_name="{{ project['provider_name'] }}">
                              {% if project_active %}My Server{% else %}Launch{% endif %}
                           </a>
                           <a role="button" id="delete-{{ project['ref'] }}"

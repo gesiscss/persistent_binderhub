@@ -53,24 +53,8 @@ $(document).ready(function() {
             var ref = $(this).prop('id').replace("launch-","");
             var repo_url = $(this).data('url');
             var repo_url_lower = repo_url.toLowerCase();
-            var provider_prefix;
-            var provider_prefix_selected;
-            // TODO handle provider prefix for other providers
-            if (repo_url_lower.indexOf('github.com') !== -1 && repo_url_lower.indexOf('gist.github.com') === -1) {
-               provider_prefix = 'gh';
-               provider_prefix_selected = 'GitHub';
-            } else if (repo_url_lower.indexOf('gitlab.com') !== -1) {
-               // gitlab.com
-               provider_prefix = 'gl';
-               provider_prefix_selected = 'GitLab.com';
-            } else if (repo_url_lower.indexOf('gist.github.com') !== -1) {
-               // gist.github.com
-               provider_prefix = 'gist';
-               provider_prefix_selected = 'Gist';
-            } else {
-               provider_prefix = 'git';
-               provider_prefix_selected = 'Git repository';
-            }
+            var provider_prefix = $(this).data('provider_prefix');
+            var provider_prefix_selected = $(this).data('provider_name');
             $('#provider_prefix').val(provider_prefix);
             $('#provider_prefix-selected').text(provider_prefix_selected);
             $('#ref').val(ref);
