@@ -13,6 +13,16 @@ from jupyterhub.utils import admin_only
 from jupyterhub.apihandlers.users import admin_or_self
 from jupyterhub.apihandlers.base import APIHandler
 from kubespawner import KubeSpawner
+from traitlets import List
+
+DEFAULT_PROVIDERS = (
+    {"prefix": "gh", "name": "GitHub", "hostname": "github.com"},
+    {"prefix": "git", "name": "Git", "hostname": None},
+    {"prefix": "gl", "name": "GitLab", "hostname": "gitlab.com"},
+    {"prefix": "gist", "name": "Gist", "hostname": "gist.github.com"},
+)
+
+DEFAULT_PROVIDER = {"provider_prefix": "git", "provider_name": "Git"}
 
 
 class PersistentBinderSpawner(KubeSpawner):
@@ -27,6 +37,28 @@ class PersistentBinderSpawner(KubeSpawner):
       Takes project information (e.g. image and repo url) from `user_options`, which is set by binder.
     - adds/updates data of the launched project into state["projects"] of `spawners` table
     """
+    repo_providers = List(
+        DEFAULT_PROVIDERS,
+        config=True,
+        help="""
+        List of Repo Providers to use in the UI
+        """,
+    )
+
+    @property
+    def _repo_provider_by_domain(self):
+        return [
+            (
+                repo_provider["hostname"],
+                {
+                    "provider_prefix": repo_provider["prefix"],
+                    "provider_name": repo_provider["name"],
+                },
+            )
+            for repo_provider in self.repo_providers
+            if repo_provider["hostname"] is not None
+        ]
+
     def __init__(self, **kwargs):
         super(PersistentBinderSpawner, self).__init__(**kwargs)
         # get default_project from custom config of z2jh chart (`binderhub.jupyterhub.custom`)
@@ -42,21 +74,23 @@ class PersistentBinderSpawner(KubeSpawner):
             "last_used": "never",
         }
 
+    def url_to_provider_args(self, url: str) -> dict:
+        """Infers the repo provider from a URL."""
+        if url.endswith(".git"):
+            url = url[:-4]
+        url_parts = urlparse(url)
+        provider = url_parts.netloc.lower()
+        for domain, args in self._repo_provider_by_domain:
+            if domain in provider:
+                return args
+        return DEFAULT_PROVIDER
+
     def url_to_display_name(self, url):
         """Converts a URL to display name in a `prefix/user_or_org_name/repo_name` format."""
         if url.endswith('.git'):
             url = url[:-4]
         url_parts = urlparse(url)
-        # TODO handle provider prefix for other providers
-        provider = url_parts.netloc.lower()
-        if 'gist.github.com' in provider:
-            provider_prefix = 'gist'
-        elif 'github.com' in provider:
-            provider_prefix = 'gh'
-        elif 'gitlab.com' in provider:
-            provider_prefix = 'gl'
-        else:
-            provider_prefix = 'git'
+        provider_prefix = self.url_to_provider_args(url)["provider_prefix"]
         path = url_parts.path.strip('/')
         display_name = f'{provider_prefix}/{path}'
         return display_name
@@ -232,6 +266,10 @@ class PersistentBinderSpawner(KubeSpawner):
             deleted_projects = []
             self.log.info(f"User ({self.user.name}) hasn't launched a project yet.")
         state = super().get_state()
+        projects = [
+            {**project, **self.url_to_provider_args(project["repo_url"])}
+            for project in projects
+        ]
         state['projects'] = projects
         state['deleted_projects'] = deleted_projects
 
@@ -250,6 +288,7 @@ class PersistentBinderSpawner(KubeSpawner):
                 "ref": self.ref,
                 "display_name": self.url_to_display_name(self.repo_url),
                 "last_used": datetime.utcnow().isoformat() + 'Z',
+                **self.url_to_provider_args(self.repo_url),
             })
             state['projects'] = new_projects
             self.log.info(f"User ({self.user.name}) has just used the project {self.repo_url}.")

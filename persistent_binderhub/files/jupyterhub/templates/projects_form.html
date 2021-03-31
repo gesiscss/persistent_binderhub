@@ -1,3 +1,4 @@
+  {% set repo_providers = user.spawner.repo_providers %}
   <div class="row form-group"></div>
   <div class="row build-project-container">
     <div class="col-lg-12 build-form-container">
@@ -20,15 +21,9 @@
               <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" id="provider_prefix_sel">
-                <li class="dropdown-item" value="gh"><a href="#">GitHub</a></li>
-                <li class="dropdown-item" value="gist"><a href="#">Gist</a></li>
-                <li class="dropdown-item" value="gl"><a href="#">GitLab.com</a></li>
-                <li class="dropdown-item" value="git"><a href="#">Git repository</a></li>
-                {# TODO enable zenodo, figshare and others #}
-{#                <li class="dropdown-item" value="zenodo"><a href="#">Zenodo DOI</a></li>#}
-{#                <li class="dropdown-item" value="figshare"><a href="#">Figshare DOI</a></li>#}
-{#                <li class="dropdown-item" value="hydroshare"><a href="#">Hydroshare resource</a></li>#}
-{#                <li class="dropdown-item" value="dataverse"><a href="#">Dataverse DOI</a></li>#}
+                {% for repo_provider in repo_providers %}
+                <li class="dropdown-item" value="{{ repo_provider['prefix'] }}"><a href="#">{{ repo_provider['name'] }}</a></li>
+                {% endfor %}
               </ul>
             </div>
             <input class="form-control" type="text" id="repository" data-lpignore="true" placeholder="GitHub repository name or URL"/>
