@@ -19,6 +19,11 @@ DEFAULT_PROVIDERS = (
     {"prefix": "gh", "name": "GitHub", "hostname": "github.com"},
     {"prefix": "git", "name": "Git", "hostname": None},
     {"prefix": "gl", "name": "GitLab", "hostname": "gitlab.com"},
+    {"prefix": "gist", "name": "Gist", "hostname": "gist.github.com"},
+    {"prefix": "zenodo", "name": "Zenodo DOI", "hostname": "zenodo.org"},
+    {"prefix": "figshare", "name": "Figshare DOI", "hostname": "figshare.org"},
+    {"prefix": "hydroshare", "name": "Hydroshare resource", "hostname": "hydroshare.org"},
+    {"prefix": "dataverse", "name": "Dataverse DOI", "hostname": "dataverse.org"},
 )
 
 DEFAULT_PROVIDER = {"provider_prefix": "git", "provider_name": "Git"}
