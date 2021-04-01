@@ -50,12 +50,18 @@ binderhub:
     10-repo-providers:  |
       # TODO enable zenodo, figshare and others
       from binderhub.repoproviders import GitHubRepoProvider, GistRepoProvider, \
-                                          GitLabRepoProvider, GitRepoProvider
+                                          GitLabRepoProvider, GitRepoProvider, \
+                                          ZenodoProvider, FigshareProvider, \
+                                          HydroshareProvider, DataverseProvider
       c.BinderHub.repo_providers = {
           'gh': GitHubRepoProvider,
           'gist': GistRepoProvider,
           'gl': GitLabRepoProvider,
           'git': GitRepoProvider,
+          'zenodo': ZenodoProvider,
+          'figshare': FigshareProvider,
+          'hydroshare': HydroshareProvider,
+          'dataverse': DataverseProvider,
       }
 
   cors: &cors
